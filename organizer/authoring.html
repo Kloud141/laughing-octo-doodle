@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<link rel="icon" type="image/x-icon" href="../assets/favicon/favicon.ico"/>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16x16.png"/>
+<link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png"/>
+<link rel="manifest" href="../assets/favicon/site.webmanifest"/>
+<meta name="robots" content="noindex, nofollow"/>
+<title>EMBARK PEDIA | Organizer Portal — Authoring Workspace</title>
+
+<link href="../assets/css/fontawesome.css" rel="stylesheet"/>
+<link href="../assets/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="../assets/css/style.css" rel="stylesheet"/>
+<link href="../assets/css/responsive.css" rel="stylesheet"/>
+<link href="../assets/css/header-footer.css" rel="stylesheet"/>
+<link href="organizer.css" rel="stylesheet"/>
+</head>
+<body>
+<header class="ep-header" id="ep-header">
+  <div class="ep-header__wash" aria-hidden="true">
+    <svg viewBox="0 0 1440 140" preserveAspectRatio="none" focusable="false">
+      <path class="ep-header__wash-shape ep-header__wash-shape--1" d="M0,40 C220,90 380,0 620,35 C860,70 980,10 1220,45 C1330,60 1400,35 1440,40 L1440,140 L0,140 Z"></path>
+      <path class="ep-header__wash-shape ep-header__wash-shape--2" d="M0,70 C260,30 460,110 720,65 C960,25 1120,95 1440,55 L1440,140 L0,140 Z"></path>
+    </svg>
+  </div>
+  <div class="ep-header__bar">
+    <div class="ep-header__inner">
+      <nav class="ep-nav ep-nav--left" aria-label="Primary">
+        <ul><li><a class="ep-nav__link" href="../index.html">Main Site</a></li></ul>
+      </nav>
+      <div class="ep-header__logo">
+        <a href="../index.html" aria-label="Embark Pedia — home"><img src="../assets/images/logo/primary-logo.png" alt="Embark Pedia" /></a>
+      </div>
+      <nav class="ep-nav ep-nav--right" aria-label="Secondary">
+        <ul>
+          <li class="ep-nav__item"><span class="ep-organizer-badge">Organizer Portal</span></li>
+          <li class="ep-nav__item"><button class="ep-btn ep-btn--pill ep-org-logout-btn" id="ep-org-logout" type="button">Log Out</button></li>
+        </ul>
+      </nav>
+      <button class="ep-hamburger" id="ep-hamburger" type="button" aria-label="Open menu" aria-haspopup="true" aria-expanded="false" aria-controls="ep-drawer">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="ep-header__logo ep-header__logo--mobile">
+        <a href="../index.html"><img src="../assets/images/logo/primary-logo.png" alt="Embark Pedia" /></a>
+      </div>
+    </div>
+  </div>
+  <div class="ep-drawer-backdrop" id="ep-drawer-backdrop" hidden></div>
+  <div class="ep-drawer" id="ep-drawer" aria-hidden="true">
+    <div class="ep-drawer__panel" role="dialog" aria-modal="true" aria-label="Site menu">
+      <button class="ep-drawer__close" id="ep-drawer-close" type="button" aria-label="Close menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M1 1l18 18M19 1L1 19" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+      <nav class="ep-drawer__nav" aria-label="Mobile"><ul><li><a href="../index.html">Main Site</a></li></ul></nav>
+      <div class="ep-drawer__org">
+        <span class="ep-organizer-badge">Organizer Portal</span>
+        <button class="ep-btn ep-btn--pill ep-org-logout-btn" type="button">Log Out</button>
+      </div>
+      <div class="ep-drawer__logo"><img src="../assets/images/logo/primary-logo.png" alt="Embark Pedia" /></div>
+    </div>
+  </div>
+</header>
+
+<div class="ep-org-shell" id="ep-org-shell" data-page="authoring">
+  <aside class="ep-org-sidebar">
+    <div class="ep-org-identity">
+      <p class="ep-org-identity__name" id="ep-org-name">—</p>
+      <p class="ep-org-identity__role" id="ep-org-role">—</p>
+      <span class="ep-org-identity__status" id="ep-org-vendor-status" hidden></span>
+    </div>
+    <button class="ep-org-nav-btn" data-section="dashboard">Dashboard</button>
+    <button class="ep-org-nav-btn" data-section="trips" data-role-only="vendor">My Trips</button>
+    <button class="ep-org-nav-btn" data-section="trips" data-role-only="admin">All Trips</button>
+    <button class="ep-org-nav-btn" data-section="add-trip">Add Tour</button>
+    <button class="ep-org-nav-btn" data-section="roams" data-role-only="admin">ROAMS</button>
+    <button class="ep-org-nav-btn" data-section="enquiries">Enquiries</button>
+    <button class="ep-org-nav-btn" data-section="sales" data-role-only="admin">Sales</button>
+    <button class="ep-org-nav-btn" data-section="partner" data-role-only="vendor">Partner</button>
+    <button class="ep-org-nav-btn" data-section="profile">Profile</button>
+    <div class="ep-org-nav-divider" data-role-only="admin"></div>
+    <a class="ep-org-nav-btn ep-org-switch-btn" data-role-only="admin" href="approvals.html">Open Review &amp; Approvals</a>
+  </aside>
+
+  <main class="ep-org-main">
+    <div class="ep-org-banner" id="ep-org-pending-banner" hidden data-role-only="vendor"></div>
+
+    <section class="ep-org-section" id="sec-dashboard">
+      <h2>Dashboard</h2>
+      <p class="ep-org-lede" data-role-only="vendor">Your trips, at a glance.</p>
+      <p class="ep-org-lede" data-role-only="admin">Platform-wide authoring snapshot.</p>
+      <div class="ep-org-stats" id="dashboard-stats"></div>
+    </section>
+
+    <section class="ep-org-section" id="sec-trips">
+      <h2 data-role-only="vendor">My Trips</h2>
+      <h2 data-role-only="admin">All Trips</h2>
+      <p class="ep-org-lede">Every TRIP tied to your account, with its review status.</p>
+      <div class="ep-org-card">
+        <div class="ep-org-table-wrap">
+          <table class="ep-org-table">
+            <thead><tr><th>Title</th><th>Destination</th><th>Duration</th><th>Price</th><th data-role-only="admin">Vendor</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="trips-table-body"><tr class="ep-org-empty-row"><td colspan="7">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="ep-org-section" id="sec-add-trip">
+      <h2>Add Tour</h2>
+      <p class="ep-org-lede" data-role-only="vendor">New trips are submitted for admin review before they go live.</p>
+      <p class="ep-org-lede" data-role-only="admin">Trips you add here publish immediately.</p>
+      <div class="ep-org-card">
+        <div class="ep-org-form-msg" id="trip-form-msg"></div>
+        <form class="ep-org-form" id="trip-form">
+          <div class="ep-org-form-grid">
+            <div class="ep-field"><label for="trip-destination">Destination*</label><select id="trip-destination" required><option value="">Loading…</option></select></div>
+            <div class="ep-field"><label for="trip-title">Trip Title*</label><input id="trip-title" type="text" required placeholder="Goa Beach Escape"/></div>
+          </div>
+          <div class="ep-org-form-grid">
+            <div class="ep-field"><label for="trip-days">Days* (2–9)</label><input id="trip-days" type="number" min="2" max="9" required/></div>
+            <div class="ep-field"><label for="trip-nights">Nights*</label><input id="trip-nights" type="number" min="1" required/></div>
+          </div>
+          <div class="ep-org-form-grid">
+            <div class="ep-field"><label for="trip-category">Category*</label><input id="trip-category" type="text" placeholder="Honeymoon, Family, Adventure…" required/></div>
+            <div class="ep-field"><label for="trip-hotel-type">Hotel Type</label><input id="trip-hotel-type" type="text" placeholder="3-star, 4-star, Resort…"/></div>
+          </div>
+          <div class="ep-org-form-grid">
+            <div class="ep-field"><label for="trip-price">Base Price (₹)*</label><input id="trip-price" type="number" min="0" step="1" required/></div>
+            <div class="ep-field"><label for="trip-price-b">With Breakfast (₹)</label><input id="trip-price-b" type="number" min="0" step="1"/></div>
+          </div>
+          <div class="ep-org-form-grid">
+            <div class="ep-field"><label for="trip-price-bd">With Breakfast + Dinner (₹)</label><input id="trip-price-bd" type="number" min="0" step="1"/></div>
+            <div class="ep-field"><label for="trip-image">Cover Image URL</label><input id="trip-image" type="url" placeholder="https://…"/></div>
+          </div>
+
+          <fieldset>
+            <legend>Inclusions</legend>
+            <div id="trip-inclusions"></div>
+            <button type="button" class="ep-org-btn" id="trip-add-inclusion">+ Add inclusion</button>
+          </fieldset>
+
+          <fieldset>
+            <legend>Exclusions</legend>
+            <div id="trip-exclusions"></div>
+            <button type="button" class="ep-org-btn" id="trip-add-exclusion">+ Add exclusion</button>
+          </fieldset>
+
+          <fieldset>
+            <legend>Day-by-day Itinerary (minimum 3 days)</legend>
+            <div id="trip-itinerary"></div>
+            <button type="button" class="ep-org-btn" id="trip-add-day">+ Add another day</button>
+          </fieldset>
+
+          <fieldset>
+            <legend>Hotel Stays / Check-ins</legend>
+            <div id="trip-stays"></div>
+            <button type="button" class="ep-org-btn" id="trip-add-stay">+ Add check-in</button>
+          </fieldset>
+
+          <button type="submit" class="ep-org-btn ep-org-btn--primary">Save Trip</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="ep-org-section" id="sec-roams" data-role-only="admin">
+      <h2>ROAMS</h2>
+      <p class="ep-org-lede">Admin-posted 9–11 day flagship itineraries. New ROAMS are no longer created from this dashboard — use Pause/Start/Stop below to manage the visibility of existing ones. Paused and stopped ROAMS are automatically pulled from the navbar dropdown and the roams listing page; Stop is one-way.</p>
+      <div class="ep-org-card">
+        <div class="ep-org-card-head"><h3>Existing ROAMS</h3></div>
+        <div class="ep-org-table-wrap">
+          <table class="ep-org-table">
+            <thead><tr><th>Title / Route</th><th>Dates</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="roams-table-body"><tr class="ep-org-empty-row"><td colspan="4">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="ep-org-section" id="sec-enquiries">
+      <h2>Enquiries</h2>
+      <p class="ep-org-lede" data-role-only="vendor">Trip enquiries an admin has shared with you. Customer contact details stay with Embark Pedia admin.</p>
+      <p class="ep-org-lede" data-role-only="admin">Trip enquiries and general contact-us messages.</p>
+
+      <div class="ep-org-card">
+        <div class="ep-org-card-head"><h3>Trip Enquiries</h3></div>
+        <div class="ep-org-table-wrap">
+          <table class="ep-org-table">
+            <thead><tr><th data-role-only="admin">Customer</th><th data-role-only="vendor">Trip</th><th data-role-only="admin">Trip / Vendor</th><th>Preferred Date</th><th>Pax</th><th data-role-only="admin">Partner</th><th data-role-only="vendor">Reference</th><th data-role-only="vendor">Message</th><th>Status</th><th data-role-only="admin">Actions</th></tr></thead>
+            <tbody id="trip-enquiries-body"><tr class="ep-org-empty-row"><td colspan="8">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="ep-org-card" data-role-only="admin">
+        <div class="ep-org-card-head"><h3>Contact-Us Messages</h3></div>
+        <div class="ep-org-table-wrap">
+          <table class="ep-org-table">
+            <thead><tr><th>From</th><th>Type</th><th>Subject</th><th>Message</th><th>Status</th></tr></thead>
+            <tbody id="contact-enquiries-body"><tr class="ep-org-empty-row"><td colspan="5">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="ep-org-section" id="sec-sales" data-role-only="admin">
+      <h2>Sales — All Vendors</h2>
+      <p class="ep-org-lede">A manual ledger of confirmed bookings (there is no checkout flow yet — see database/schema.sql).</p>
+      <div class="ep-org-stats" id="sales-summary"></div>
+
+      <div class="ep-org-card" data-role-only="admin">
+        <h3>By Vendor</h3>
+        <div class="ep-org-table-wrap">
+          <table class="ep-org-table"><thead><tr><th>Vendor</th><th>Sales</th><th>Revenue</th></tr></thead>
+            <tbody id="sales-by-vendor-body"><tr class="ep-org-empty-row"><td colspan="3">Loading…</td></tr></tbody></table>
+        </div>
+      </div>
+
+      <div class="ep-org-card">
+        <h3>Log a Sale</h3>
+        <div class="ep-org-form-msg" id="sale-form-msg"></div>
+        <form class="ep-org-form" id="sale-form">
+          <div class="ep-field"><label for="sale-tour">Trip*</label><select id="sale-tour" required><option value="">Loading…</option></select></div>
+          <div class="ep-org-form-grid">
+            <div class="ep-field"><label for="sale-buyer">Buyer Name*</label><input id="sale-buyer" type="text" required/></div>
+            <div class="ep-field"><label for="sale-group-size">Group Size</label><input id="sale-group-size" type="number" min="1"/></div>
+          </div>
+          <div class="ep-org-form-grid">
+            <div class="ep-field"><label for="sale-email">Buyer Email</label><input id="sale-email" type="email"/></div>
+            <div class="ep-field"><label for="sale-contact">Buyer Contact</label><input id="sale-contact" type="tel"/></div>
+          </div>
+          <div class="ep-org-form-grid">
+            <div class="ep-field"><label for="sale-amount">Amount*</label><input id="sale-amount" type="number" min="0" step="0.01" required/></div>
+            <div class="ep-field"><label for="sale-currency">Currency</label><input id="sale-currency" type="text" value="INR" maxlength="3"/></div>
+          </div>
+          <div class="ep-field"><label for="sale-date">Sale Date*</label><input id="sale-date" type="date" required/></div>
+          <div class="ep-field"><label for="sale-notes">Notes</label><textarea id="sale-notes" rows="2"></textarea></div>
+          <button type="submit" class="ep-org-btn ep-org-btn--primary">Log Sale</button>
+        </form>
+      </div>
+
+      <div class="ep-org-card">
+        <h3>Recent Sales</h3>
+        <div class="ep-org-table-wrap">
+          <table class="ep-org-table"><thead><tr><th>Trip</th><th>Buyer</th><th>Date</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody id="sales-table-body"><tr class="ep-org-empty-row"><td colspan="5">Loading…</td></tr></tbody></table>
+        </div>
+      </div>
+    </section>
+
+    <section class="ep-org-section" id="sec-partner" data-role-only="vendor">
+      <h2>Partner</h2>
+      <p class="ep-org-lede">Every vendor is also a partner — refer clients directly and earn a profit share, separate from your own trip sales.</p>
+      <div class="ep-org-card">
+        <p>Your Partner ID: <span class="ep-partner-id-badge" id="partner-id-badge">—</span></p>
+        <div class="ep-org-stats" id="partner-dashboard-stats"></div>
+      </div>
+      <div class="ep-org-card">
+        <div class="ep-org-card-head"><h3>Earnings by Voyage</h3></div>
+        <div class="ep-org-table-wrap">
+          <table class="ep-org-table">
+            <thead><tr><th>Voyage ID</th><th>Trip</th><th>Pax</th><th>Commission</th><th>Credited</th><th>Payout</th></tr></thead>
+            <tbody id="partner-sales-table-body"><tr class="ep-org-empty-row"><td colspan="6">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="ep-org-card">
+        <h3>Send Link</h3>
+        <p>Share any trip with your Partner ID already attached, so referrals are credited to you automatically.</p>
+        <div class="ep-field"><label for="partner-send-link-input">Trip page URL (optional)</label><input id="partner-send-link-input" type="url" placeholder="https://embarkpedia.com/destinations/tour-details.html?article=..."/></div>
+        <div class="ep-field"><label for="partner-send-link-output">Your link</label>
+          <div class="ep-partner-link-row">
+            <input id="partner-send-link-output" type="text" readonly/>
+            <button type="button" class="ep-org-btn ep-org-btn--accent" id="partner-send-link-copy">Copy</button>
+          </div>
+        </div>
+        <div class="ep-org-form-msg" id="partner-send-link-msg"></div>
+      </div>
+    </section>
+
+    <section class="ep-org-section" id="sec-profile">
+      <h2>Edit Profile</h2>
+      <p class="ep-org-lede">Update your details, contact number, and password.</p>
+
+      <div class="ep-org-card">
+        <h3>Profile Details</h3>
+        <div class="ep-org-form-msg" id="profile-form-msg"></div>
+        <form class="ep-org-form" id="profile-form">
+          <div class="ep-org-form-grid">
+            <div class="ep-field"><label for="profile-fname">First Name*</label><input id="profile-fname" type="text" required/></div>
+            <div class="ep-field"><label for="profile-lname">Last Name*</label><input id="profile-lname" type="text" required/></div>
+          </div>
+          <div class="ep-org-form-grid">
+            <div class="ep-field"><label for="profile-contact">Contact Number*</label><input id="profile-contact" type="tel" required/></div>
+            <div class="ep-field"><label for="profile-email">Email (read-only)</label><input id="profile-email" type="email" disabled/></div>
+          </div>
+          <div id="profile-vendor-fields" hidden>
+            <div class="ep-field"><label for="profile-org">Organization Name*</label><input id="profile-org" type="text"/></div>
+            <div class="ep-org-form-grid">
+              <div class="ep-field"><label for="profile-biz-phone">Business Phone</label><input id="profile-biz-phone" type="tel"/></div>
+              <div class="ep-field"><label for="profile-website">Website</label><input id="profile-website" type="url"/></div>
+            </div>
+            <div class="ep-field"><label for="profile-about">About</label><textarea id="profile-about" rows="3"></textarea></div>
+          </div>
+          <button type="submit" class="ep-org-btn ep-org-btn--primary">Save Profile</button>
+        </form>
+      </div>
+
+      <div class="ep-org-card">
+        <h3>Change Password</h3>
+        <div class="ep-org-form-msg" id="password-form-msg"></div>
+        <form class="ep-org-form" id="password-form">
+          <div class="ep-field"><label for="pw-current">Current Password*</label><input id="pw-current" type="password" required/></div>
+          <div class="ep-org-form-grid">
+            <div class="ep-field"><label for="pw-new">New Password*</label><input id="pw-new" type="password" required/></div>
+            <div class="ep-field"><label for="pw-confirm">Confirm New Password*</label><input id="pw-confirm" type="password" required/></div>
+          </div>
+          <button type="submit" class="ep-org-btn ep-org-btn--primary">Change Password</button>
+        </form>
+      </div>
+
+      <div class="ep-org-card ep-org-card--danger" data-role-only="vendor">
+        <h3>Danger Zone</h3>
+        <div class="ep-org-form-msg" id="danger-form-msg"></div>
+        <p>Deactivating logs you out and pauses your account until support reactivates it. Deleting is permanent and only possible if you have no sales or partner earnings on file — otherwise, contact <a href="mailto:support@embarkpedia.com">support@embarkpedia.com</a>.</p>
+        <div class="ep-org-row-actions">
+          <button type="button" class="ep-org-btn ep-org-btn--ghost" id="deactivate-account-btn">Deactivate My Account</button>
+          <button type="button" class="ep-org-btn ep-org-btn--danger" id="delete-account-btn">Delete My Account</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer class="ep-footer ep-footer--bar" id="ep-footer">
+  <div class="ep-footer__bottom">
+    <p>&copy; <span id="ep-footer-year">2026</span> Embark Pedia. Authoring Workspace.</p>
+    <div class="ep-footer__bottom-links"><a href="../index.html">Back to main site</a></div>
+  </div>
+</footer>
+
+<script defer src="../assets/js/bootstrap.bundle.min.js"></script>
+<script defer src="../assets/js/chrome.js"></script>
+<script src="../assets/js/mock-backend.js"></script>
+<script defer src="organizer.js"></script>
+</body>
+</html>

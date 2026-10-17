@@ -1,0 +1,368 @@
+/* ============================================================
+   Embark Pedia :: Login / Sign Up page styles
+   ------------------------------------------------------------
+   Scoped to /auth/ only. Reuses the sitewide design tokens
+   already defined in ../assets/css/style.css and
+   ../assets/css/header-footer.css (--f-heading, --f-body,
+   --f-accent, --color-primary, --color-secondary-1,
+   --color-secondary-2, --color-accent) rather than redefining
+   them. Brief for this page: lean on Secondary-2 (lime, C) for
+   primary actions/highlights, use Primary (pink/magenta, A)
+   sparingly (small links, required marks, validation states).
+   ============================================================ */
+
+.ep-auth-main { background: var(--color-secondary-1); }
+
+.ep-auth-split {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  min-height: calc(100vh - var(--ep-header-h, 88px));
+}
+@media (max-width: 900px) {
+  .ep-auth-split { grid-template-columns: 1fr; }
+}
+
+/* ---------------- Hero (left) ---------------- */
+.ep-auth-hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 320px;
+  background-image:
+    linear-gradient(155deg, color-mix(in srgb, var(--color-accent) 78%, transparent) 10%, color-mix(in srgb, var(--color-secondary-2) 55%, transparent) 100%),
+    url("../assets/images/destinations/Kerala.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+  padding: 48px 48px 56px;
+}
+@media (max-width: 900px) { .ep-auth-hero { min-height: 260px; padding: 32px 28px 36px; } }
+
+.ep-auth-hero__wash { position: absolute; inset: 0; pointer-events: none; opacity: 0.5; }
+.ep-auth-hero__wash svg { width: 100%; height: 100%; filter: blur(10px); }
+
+.ep-auth-hero__content { position: relative; z-index: 1; color: var(--color-secondary-1); max-width: 480px; }
+.ep-auth-hero__brand {
+  font-family: var(--f-heading);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-secondary-2);
+  margin: 0 0 18px;
+}
+.ep-auth-hero__title {
+  font-family: var(--f-heading);
+  font-weight: 700;
+  font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+  line-height: 1.2;
+  margin: 0 0 14px;
+  text-shadow: 0 2px 18px color-mix(in srgb, var(--color-accent) 60%, transparent);
+}
+.ep-auth-hero__title em { color: var(--color-secondary-2); font-style: normal; }
+.ep-auth-hero__subtitle {
+  font-family: var(--f-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--color-secondary-1) 88%, transparent);
+  margin: 0;
+}
+
+/* ---------------- Form panel (right) ---------------- */
+.ep-auth-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+}
+.ep-auth-card__inner {
+  width: 100%;
+  max-width: 460px;
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 22px;
+  box-shadow: 0 24px 60px var(--shadow-strong);
+  padding: 36px 34px 30px;
+}
+@media (max-width: 480px) { .ep-auth-card { padding: 28px 14px; } .ep-auth-card__inner { padding: 28px 20px 24px; } }
+
+.ep-auth-card__logo { display: none; }
+@media (max-width: 900px) {
+  .ep-auth-card__logo { display: block; height: 34px; margin: 0 auto 18px; }
+}
+
+/* Tabs */
+.ep-auth-tabs {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--color-secondary-1);
+  border-radius: var(--ep-radius-pill, 999px);
+  padding: 5px;
+  margin-bottom: 26px;
+}
+.ep-auth-tab {
+  position: relative;
+  z-index: 1;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 11px 10px;
+  font-family: var(--f-accent);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  border-radius: var(--ep-radius-pill, 999px);
+  transition: color 0.25s ease;
+}
+.ep-auth-tab[aria-selected="true"] { color: var(--color-accent); }
+.ep-auth-tabs__indicator {
+  position: absolute;
+  top: 5px; bottom: 5px; left: 5px;
+  width: calc(50% - 5px);
+  background: var(--color-secondary-2);
+  border-radius: var(--ep-radius-pill, 999px);
+  transition: transform 0.28s ease;
+}
+.ep-auth-tabs[data-active="signup"] .ep-auth-tabs__indicator { transform: translateX(100%); }
+
+/* Panels */
+.ep-auth-panel[hidden] { display: none; }
+.ep-auth-panel h2 {
+  font-family: var(--f-heading);
+  color: var(--color-accent);
+  font-size: 1.5rem;
+  margin: 0 0 4px;
+}
+.ep-auth-panel > p.ep-auth-lede {
+  font-family: var(--f-body);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 0 0 22px;
+}
+
+/* Fields */
+.ep-field { margin-bottom: 16px; }
+.ep-field label {
+  display: block;
+  font-family: var(--f-accent);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-accent);
+  margin-bottom: 6px;
+}
+.ep-field label .req { color: var(--color-primary); margin-left: 2px; }
+.ep-field input:not([type="checkbox"]),
+.ep-field select {
+  width: 100%;
+  font-family: var(--f-body);
+  font-size: 0.95rem;
+  color: var(--color-accent);
+  background: var(--color-secondary-1);
+  border: 1.5px solid var(--border-soft);
+  border-radius: 12px;
+  padding: 0.75em 0.95em;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.ep-field input:focus, .ep-field select:focus {
+  outline: none;
+  border-color: var(--color-secondary-2);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-secondary-2) 35%, transparent);
+}
+.ep-field.has-error input, .ep-field.has-error select { border-color: var(--color-primary); }
+.ep-field__error {
+  display: none;
+  color: var(--color-primary);
+  font-size: 0.78rem;
+  margin-top: 5px;
+  font-family: var(--f-body);
+}
+.ep-field.has-error .ep-field__error { display: block; }
+
+.ep-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 420px) { .ep-field-row { grid-template-columns: 1fr; } }
+
+/* Password field w/ show-hide */
+.ep-password-wrap { position: relative; }
+.ep-password-wrap input { padding-right: 2.6em; }
+.ep-password-toggle {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer; padding: 6px;
+  color: var(--text-muted);
+}
+.ep-password-toggle svg { width: 18px; height: 18px; }
+
+/* Strength meter */
+.ep-strength { margin-top: 8px; }
+.ep-strength__bars { display: flex; gap: 5px; margin-bottom: 4px; }
+.ep-strength__bars span { height: 4px; flex: 1; background: var(--border-soft); border-radius: 2px; transition: background 0.2s ease; }
+.ep-strength__label { font-size: 0.75rem; font-family: var(--f-body); color: var(--text-muted); }
+.ep-strength[data-level="1"] .ep-strength__bars span:nth-child(1) { background: var(--color-primary); }
+.ep-strength[data-level="2"] .ep-strength__bars span:nth-child(-n+2) { background: #e0a53c; }
+.ep-strength[data-level="3"] .ep-strength__bars span:nth-child(-n+3) { background: var(--color-secondary-2); }
+.ep-strength[data-level="4"] .ep-strength__bars span { background: var(--color-secondary-2); }
+
+/* Checkbox rows */
+.ep-check-row {
+  display: flex; align-items: center; justify-content: space-between;
+  font-family: var(--f-body); font-size: 0.85rem; color: var(--text-muted);
+  margin: 4px 0 20px; gap: 12px; flex-wrap: wrap;
+}
+.ep-check-row label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.ep-check-row input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--color-secondary-2); }
+.ep-check-row a { color: var(--color-primary); text-decoration: none; }
+.ep-check-row a:hover { text-decoration: underline; }
+
+/* Captcha */
+.ep-captcha { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+.ep-captcha canvas {
+  border-radius: 10px;
+  border: 1.5px solid var(--border-soft);
+  background: var(--color-secondary-1);
+  cursor: default;
+}
+.ep-captcha-refresh {
+  border: 1.5px solid var(--border-soft);
+  background: #fff;
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--color-accent);
+  flex: 0 0 auto;
+}
+.ep-captcha-refresh:hover { background: var(--color-secondary-1); }
+.ep-captcha-refresh svg { width: 18px; height: 18px; }
+.ep-captcha-input { flex: 1 1 140px; min-width: 120px; }
+
+/* Buttons */
+.ep-auth-submit {
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  font-family: var(--f-accent);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--color-accent);
+  background: var(--color-secondary-2);
+  border-radius: var(--ep-radius-pill, 999px);
+  padding: 0.85em 1em;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  margin-top: 4px;
+}
+.ep-auth-submit:hover { background: color-mix(in srgb, var(--color-secondary-2) 85%, black); transform: translateY(-1px); box-shadow: 0 10px 24px var(--shadow-soft); }
+.ep-auth-submit:disabled { opacity: 0.7; cursor: progress; transform: none; }
+.ep-auth-submit .ep-spinner { width: 16px; height: 16px; border-radius: 50%; border: 2px solid color-mix(in srgb, var(--color-accent) 30%, transparent); border-top-color: var(--color-accent); animation: ep-spin 0.7s linear infinite; display: none; }
+.ep-auth-submit[data-loading="true"] .ep-spinner { display: inline-block; }
+.ep-auth-submit[data-loading="true"] .ep-btn-label { opacity: 0.75; }
+@keyframes ep-spin { to { transform: rotate(360deg); } }
+
+.ep-auth-divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 22px 0 16px;
+  font-family: var(--f-body); font-size: 0.78rem; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.ep-auth-divider::before, .ep-auth-divider::after { content: ""; flex: 1; height: 1px; background: var(--border-soft); }
+
+.ep-sso-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 380px) { .ep-sso-row { grid-template-columns: 1fr; } }
+.ep-sso-btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  border: 1.5px solid var(--border-soft);
+  background: #fff;
+  border-radius: 12px;
+  padding: 0.7em 0.8em;
+  font-family: var(--f-body); font-weight: 600; font-size: 0.88rem;
+  color: var(--color-accent);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.ep-sso-btn:hover { background: var(--color-secondary-1); border-color: var(--color-secondary-2); }
+.ep-sso-btn svg { width: 18px; height: 18px; flex: 0 0 auto; }
+
+.ep-auth-switch { text-align: center; margin-top: 20px; font-family: var(--f-body); font-size: 0.88rem; color: var(--text-muted); }
+.ep-auth-switch button { background: none; border: none; padding: 0; color: var(--color-primary); font-weight: 700; cursor: pointer; font-family: inherit; font-size: inherit; }
+.ep-auth-switch button:hover { text-decoration: underline; }
+
+/* "Are you an organizer?" callout — sits below the login/signup switch
+   line, points vendors/admins at the separate organizer portal login. */
+.ep-organizer-cta {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--border-soft);
+  text-align: center;
+}
+.ep-organizer-cta__label {
+  margin: 0 0 12px;
+  font-family: var(--f-body);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.ep-organizer-cta__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--f-accent);
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  padding: 0.6em 1.3em;
+  border-radius: var(--ep-radius-pill, 999px);
+  border: 2px solid var(--color-primary);
+  color: var(--color-primary);
+  background: transparent;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.ep-organizer-cta__btn:hover {
+  background: var(--color-primary);
+  color: var(--color-secondary-1);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px var(--shadow-soft);
+}
+
+.ep-form-msg {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-family: var(--f-body);
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+.ep-form-msg.is-visible { display: flex; }
+.ep-form-msg.is-success { background: color-mix(in srgb, var(--color-secondary-2) 30%, transparent); color: var(--color-accent); }
+.ep-form-msg.is-error { background: color-mix(in srgb, var(--color-primary) 14%, transparent); color: var(--color-accent); }
+.ep-form-msg svg { width: 16px; height: 16px; flex: 0 0 auto; }
+
+.ep-forgot-link { font-family: var(--f-body); font-size: 0.85rem; color: var(--color-primary); text-decoration: none; }
+.ep-forgot-link:hover { text-decoration: underline; }
+
+/* ---- Local trial login credentials -------------------------------
+   Same component as organizer/organizer.css's .ep-demo-access (copied
+   here rather than imported, since both CSS files are deliberately
+   scoped to their own folder — see each file's header comment).
+   Points at assets/js/mock-backend.js's trial customer account; see
+   that file's header comment for every trial login it seeds. ---- */
+.ep-demo-access {
+  margin: 18px 0 8px;
+  padding: 14px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--ep-radius);
+  background: color-mix(in srgb, var(--color-secondary-1) 72%, white);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+.ep-demo-access > strong { display: block; color: var(--color-accent); font-family: var(--f-accent); font-size: 0.9rem; }
+.ep-demo-access > p { margin: 3px 0 9px; }
+.ep-demo-access__row { display: grid; grid-template-columns: 62px minmax(0, 1fr) auto; gap: 6px; align-items: center; padding: 5px 0; border-top: 1px solid var(--border-soft); }
+.ep-demo-access__row span { color: var(--color-accent); font-weight: 700; }
+.ep-demo-access__row code { color: var(--color-primary); overflow-wrap: anywhere; }
+.ep-demo-access > small { display: block; margin-top: 7px; }
+@media (max-width: 480px) {
+  .ep-demo-access__row { grid-template-columns: 55px 1fr; }
+  .ep-demo-access__row code:last-child { grid-column: 2; }
+}

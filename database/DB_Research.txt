@@ -1,0 +1,517 @@
+EMBARK PEDIA — DATABASE RESEARCH NOTES
+========================================
+Plain-language companion to schema.sql, README.md and README_DB.md.
+
+Purpose of this file: for each of the 19 tables, explain (1) the real-world
+use case it exists to serve, (2) how it relates to the other tables, and
+(3) how data actually moves through it — who writes to it, who reads from
+it, and when. The second half of this file walks through five complete
+user journeys end to end, naming the actual table writes at each step.
+
+This file is deliberately informal and narrative. For the formal ERD,
+domain grouping, and lifecycle diagrams, see README_DB.md. For the DDL
+itself, see schema.sql.
+
+
+PART 1 — TABLE BY TABLE
+========================================
+
+1. users
+----------------------------------------
+Use case: the one account table for every human who can log in anywhere on
+the site — a customer who signed up to track their enquiries, a vendor who
+submits TRIPS, an admin who runs the back office, or a referral partner.
+`account_type` tells the application which of those four this row is;
+`account_status` (active/suspended/deleted) is independent of that.
+
+Relations: everything else that needs "which human did this" points back
+to users.id — vendor_profiles and partner_profiles extend a user record
+with role-specific detail (1:1), tours/roams reference the user who
+submitted and the admin who reviewed them, trip_enquiries optionally
+references the signed-in customer AND the referring partner, sales records
+who logged the sale, and partner_earnings/partner_payouts reference the
+partner being paid.
+
+Data movement: signup.php (customer) and vendor-signup.php (vendor) INSERT
+new rows. organizer-login.php / login.php READ a row by email to verify
+the password hash, then UPDATE failed_attempts/locked_until on failure or
+reset them + bump last_login_at on success. organizer-vendors.php lets an
+admin UPDATE a vendor's account_status. Virtually every organizer-*.php
+endpoint does a READ-only lookup of the signed-in user via the session, via
+ep_require_role(), before doing anything else.
+
+
+2. vendor_profiles
+----------------------------------------
+Use case: the extra information a vendor account needs that a customer or
+admin account never does — company name, the review workflow that gates
+whether they can actually submit/publish anything, and who at Embark Pedia
+approved them.
+
+Relations: one row per vendor-type user (the primary key IS the foreign
+key to users.id, enforcing true 1:1 — a vendor can't have two profiles).
+reviewed_by_user_id points at the admin who made the approve/reject call.
+
+Data movement: vendor-signup.php INSERTs this row at status 'pending' in
+the same request that creates the users row. organizer-vendors.php (admin
+only) UPDATEs review_status to approved/rejected/suspended — and approving
+a vendor also triggers an INSERT into partner_profiles for that same user,
+since every approved vendor automatically earns referral capability.
+organizer-trips.php and tour submission endpoints READ this row (joined to
+users) to confirm "is this vendor actually allowed to publish right now"
+before accepting a create/update.
+
+
+3. partner_profiles
+----------------------------------------
+Use case: the referral-program identity for anyone who can earn commission
+by referring a customer — a dedicated partner, or an approved vendor
+wearing their "also a partner" hat. The 13-character PartnerID is the
+public-facing code a partner hands out; the commission percentage is
+negotiated per-partner within a fixed 30–50% band.
+
+Relations: one row per partner-type OR approved-vendor-type user (1:1,
+same pattern as vendor_profiles). trip_enquiries.partner_user_id points
+here when a customer's enquiry came in with a PartnerID attached;
+partner_earnings and partner_payouts both key off this same user id.
+
+Data movement: a direct partner signup INSERTs this row immediately;
+an approved vendor gets this row INSERTed automatically the moment
+organizer-vendors.php flips their vendor_profiles.review_status to
+approved. organizer-partners.php (admin) can UPDATE the commission
+percentage or deactivate a partner. submit-trip-enquiry.php READs this
+table (by PartnerID) at enquiry-submission time, to resolve the PartnerID
+a customer typed into partner_user_id on the new trip_enquiries row.
+
+
+4. partner_earnings
+----------------------------------------
+Use case: a permanent, append-only ledger entry each time a partner's
+referral actually converts into a paid booking — this is the record that
+"yes, this partner earned a commission, for this exact amount, on this
+exact enquiry" and it must never silently change after the fact, even if
+the partner's commission rate changes later or the trip gets renamed.
+
+Relations: one row per trip_enquiries row that gets credited (never more
+than one — enforced by a unique constraint on enquiry_id), referencing the
+partner (partner_user_id → users.id) and optionally the TRIP or ROAM that
+was booked (for display purposes — the real "is this one TRIP or one
+ROAM" source of truth is on trip_enquiries, not duplicated here as a
+constraint). payout_id is NULL until this specific earning has been swept
+into a quarterly payout batch.
+
+Data movement: nothing inserts this row until the system's own logic
+decides a referral has "matured" — see trip_enquiries below. Once an
+enquiry is resolved (booking confirmed) AND the travel date is within 7
+days away, an INSERT happens here automatically, with base_amount and
+profit_share_percent_applied COPIED from the current state of the tour/
+enquiry and the partner's current commission rate at that moment — a
+snapshot, not a live reference. organizer-partners.php and partner.html's
+dashboard READ this table to show "pending commission" (payout_id IS NULL)
+vs. "already paid" (payout_id IS NOT NULL). organizer-partners.php's payout
+run UPDATEs a batch of these rows' payout_id when a partner_payouts row is
+created.
+
+
+5. partner_payouts
+----------------------------------------
+Use case: one row per quarterly payout event per partner — "we paid
+partner X a total of $Y covering earnings from this date range."
+
+Relations: referenced BY partner_earnings.payout_id (one payout, many
+earnings rows), itself referencing the partner via partner_user_id.
+
+Data movement: an admin, running the quarterly payout flow in
+organizer-partners.php, INSERTs one of these per partner being paid that
+cycle, then the same action UPDATEs every qualifying partner_earnings row
+to point payout_id at the new row. Read by partner.html's dashboard
+("payout history") and organizer-partners.php ("who's been paid, when").
+
+
+6. contact_messages
+----------------------------------------
+Use case: the catch-all inbox for the site's general Contact Us form —
+anything that isn't a trip-specific enquiry (support questions, press,
+partnership interest, general feedback).
+
+Relations: none outward — this is a standalone submission log, not linked
+to users, tours, or roams. (A signed-in customer who uses the general
+contact form is not correlated back to their account — if that
+correlation is ever needed, a nullable user_id column would be the natural
+addition, but it doesn't exist today.)
+
+Data movement: connect.php INSERTs a row on every successful submission
+(after the honeypot/rate-limit/same-site checks in db.php all pass).
+organizer-enquiries.php (admin) READs and UPDATEs these — marking them
+read/replied, or filtering by enquiry_type.
+
+
+7. newsletter_subscribers
+----------------------------------------
+Use case: the footer "subscribe to our newsletter" email capture, with
+double opt-in built into the schema (even though the confirmation email
+itself isn't wired up yet — see README_DB.md's refinement notes).
+
+Relations: none outward — standalone.
+
+Data movement: subscribe.php INSERTs a new row (or re-activates an
+existing unsubscribed email) with confirm_token set and confirmed_at NULL.
+Nothing currently UPDATEs confirmed_at, because no endpoint consumes the
+token yet — treat every row today as "requested," not "confirmed."
+
+
+8. rate_limits
+----------------------------------------
+Use case: the shared abuse-prevention mechanism behind every public POST
+endpoint — "has this IP address attempted this specific action too many
+times in the last window?" Implemented in the database (not in-memory/
+Redis) specifically so it works unmodified on ordinary shared PHP hosting.
+
+Relations: none — this table doesn't describe site content, it describes
+request history. ip_address + action is the thing being limited;
+created_at is the thing the window is measured against.
+
+Data movement: ep_rate_limit() in db.php INSERTs a new row on every
+checked request, and SELECTs a COUNT(*) over the trailing window to decide
+whether to allow or reject (HTTP 429) the request currently in flight. No
+endpoint ever UPDATEs or DELETEs rows here — cleanup is meant to be a
+scheduled cron DELETE (commented in schema.sql, not yet scheduled — see
+README_DB.md §4.3).
+
+
+9. destinations
+----------------------------------------
+Use case: the normalized list of places the site organizes TRIPS by
+(e.g. "Ladakh," "Kerala Backwaters") — what destination-list.html renders
+as a grid, and what destination-tours.html filters tours by.
+
+Relations: tours.destination_id points here (many TRIPS per destination).
+The FK is ON DELETE RESTRICT on purpose — you cannot delete a destination
+while any TRIP still references it, which prevents an accidental delete
+from silently orphaning a whole set of TRIPS.
+
+Data movement: currently seeded/maintained directly against the database
+(there's no "add a destination" UI in the organizer portal yet — vendors/
+admins pick from existing destinations when authoring a TRIP).
+public-trips.php and organizer-trips.php both READ this table (joined to
+tours) constantly; nothing in the current application INSERTs or UPDATEs
+it at runtime.
+
+
+10. tours
+----------------------------------------
+Use case: one row per TRIP (the 2–9 day, vendor-or-admin-authored product)
+— the central record that everything about that TRIP hangs off of:
+pricing, duration, status, who submitted it, who reviewed it.
+
+Relations: belongs to one destination; has four child tables
+(tour_inclusions, tour_exclusions, tour_itinerary_days, tour_stays) that
+are deleted automatically if the tour itself is deleted (ON DELETE
+CASCADE); is the "tour side" of the shared trip_enquiries/sales pattern;
+submitted_by_user_id and reviewed_by_user_id both point at users.id.
+
+Data movement: organizer-trips.php is the only writer. A vendor's "create"
+action INSERTs this row at status 'pending_review' (and simultaneously
+INSERTs the four child tables' rows in the same request, via
+ep_save_trip_children()); an admin's "create" goes straight to
+'published'. "approve"/"reject"/"pause"/"resume"/"archive" actions are all
+single-column UPDATEs to status (plus reviewed_by_user_id/reviewed_at on
+the approve/reject transitions). public-trips.php and
+public-catalogue-sync.js READ only the published rows, unauthenticated.
+destination-tours.html and tour-details.html's eventual database-backed
+view READ this table joined to its four children.
+
+
+11. tour_inclusions / 12. tour_exclusions
+----------------------------------------
+Use case: the two bullet lists shown on a TRIP's detail page under
+"What's included" / "What's not included" — kept as separate tables rather
+than one table with an is_included flag, matching how tour-details.html
+actually renders them as two visually distinct lists.
+
+Relations: both belong to exactly one tour (ON DELETE CASCADE); position
+gives them their display order, enforced unique per tour so two bullets
+can never silently collide on the same position.
+
+Data movement: written only as part of ep_save_trip_children() inside
+organizer-trips.php's create/update actions, which deletes and re-inserts
+the full set each time (simpler and safer than diffing individual bullets
+for an ordered list this small). READ by whatever renders a TRIP's detail
+page once the database-backed view of tour-details.html is live.
+
+
+13. tour_itinerary_days
+----------------------------------------
+Use case: the day-by-day plan on a TRIP's detail page — one row per day,
+with an optional "highlight" flag and an optional note (used the same way
+roam_details' itinerary JSON uses a between-days "note" item, just in
+relational form here instead of JSON, since TRIPS' itinerary is simple
+enough not to need JSON's flexibility).
+
+Relations: belongs to one tour (ON DELETE CASCADE); day_number unique per
+tour.
+
+Data movement: same as inclusions/exclusions — written by
+ep_save_trip_children() as part of a TRIP create/update, full
+delete-and-reinsert per save.
+
+
+14. tour_stays
+----------------------------------------
+Use case: the ordered list of named hotels/lodging the TRIP actually
+checks into — "Hotel X, check in day 2, check out day 4," etc. Exists as
+its own table (rather than folded into the itinerary days) because a stay
+spans multiple days and the organizer side needs to validate/display it as
+its own concept (matching the identically-shaped roam_stays table).
+
+Relations: belongs to one tour (ON DELETE CASCADE); checkin_number unique
+per tour, giving the stays their display order.
+
+Data movement: same write pattern as the three tables above — part of
+ep_save_trip_children().
+
+
+15. roams
+----------------------------------------
+Use case: one row per ROAM (the ~9–11 day, admin-authored flagship
+product) — the "listing card" data: title, route summary, dates, price,
+status. Deliberately kept separate from roam_details (the heavy detail-
+page content) so that every page needing just a ROAM's card (the roams
+grid, the navbar dropdown, search) can query this lightweight table alone
+without pulling nine JSON blobs along with it.
+
+Relations: has exactly one roam_details row (1:1) and any number of
+roam_stays rows; is the "roam side" of the shared trip_enquiries/sales
+pattern; created_by_user_id and reviewed_by_user_id point at users.id.
+reviewed_by_user_id IS populated by the app (organizer-roams.php's
+"publish" action stamps it with the approving admin); created_by_user_id
+is NOT — no current code path inserts a roams row at all (see Data
+movement below), so whoever inserts one directly should set it by hand if
+they want that provenance recorded, or leave it NULL.
+
+Data movement: organizer-roams.php (admin only) does NOT create or edit
+rows — its "create"/"update" actions were deliberately disabled and return
+an HTTP 410 ("Creating or editing ROAMS from the admin portal has been
+disabled... new rows must be added directly in the database"), and
+organizer.js's own empty-state message says the same thing to the admin
+("No ROAMS yet. Creation is disabled from this dashboard — add rows
+directly via the database."). A new ROAM row (and its 1:1 roam_details
+row, see #16) is therefore always INSERTed by hand, directly against the
+database, by whoever has that access — there is no organizer-portal form
+for it. What organizer-roams.php DOES do, once a row exists, is UPDATE its
+status: publish (also resumes a paused ROAM), pause, and archive — the
+last of which it explicitly refuses to reverse ("This ROAM was stopped and
+cannot be started again."). public-roams.php and
+public-catalogue-sync.js/chrome.js READ only published rows,
+unauthenticated — this is the table that makes a newly-published ROAM
+appear in the navbar dropdown sitewide without touching any of the ~15
+pages that render that dropdown, once someone has inserted it and an admin
+has published it.
+
+
+16. roam_details
+----------------------------------------
+Use case: the full long-form detail page for one ROAM — hero banner,
+"about this trip" narrative, photo gallery, day-by-day itinerary, what's
+included/excluded, packing list, eligibility + price, FAQ, and the closing
+"thank you" band. Nine JSON columns, one per section, matching exactly the
+shape roam-render.js already expects (documented field-by-field in
+roam-details-fields.txt).
+
+Relations: exactly one row per roam (the primary key IS the foreign key to
+roams.id, enforcing 1:1, same pattern as vendor_profiles/partner_profiles).
+
+Data movement: today, this table isn't written through any organizer UI —
+ROAM detail content is still authored directly in
+assets/js/roam-details-data.js (the static JS fixture file) because there
+is no section-by-section authoring screen yet (flagged as a gap in both
+database/README.md and README_DB.md). Once/if that authoring UI exists,
+it would INSERT/UPDATE this table the same way organizer-trips.php manages
+tour content today. roam.html's eventual database-backed render path would
+READ this table joined to roams.
+
+
+17. roam_stays
+----------------------------------------
+Use case: identical purpose to tour_stays, for ROAMS instead of TRIPS —
+the ordered list of named hotels/check-ins an organizer needs to see and
+validate, separate from roam_details' free-form JSON itinerary text.
+
+Relations: belongs to one roam (ON DELETE CASCADE); checkin_number unique
+per roam.
+
+Data movement: same status as roam_details above — schema exists and is
+ready, but no organizer-facing write path exists yet since ROAM authoring
+is still JS-file-based.
+
+
+18. trip_enquiries
+----------------------------------------
+Use case: the single record of "a customer is interested in this specific
+TRIP or ROAM" — the most heavily cross-referenced table in the whole
+schema, because it's the hinge between the public catalogue, the
+customer's identity, the partner referral program, and (eventually) sales.
+
+Relations: references exactly one of tours/roams (CHECK enforces this —
+never both, never neither); optionally references a signed-in customer
+(user_id, nullable — an enquiry can come from a guest); optionally
+references a referring partner (partner_user_id, resolved from a typed-in
+PartnerID at submission time).
+
+Data movement: submit-trip-enquiry.php INSERTs a new row on every
+tour-details.html enquiry submission — this is the endpoint that
+corrected the gap described in README_DB.md's note (it used to go through
+connect.php/contact_messages; it doesn't anymore). organizer-enquiries.php
+(admin) READs the open queue, UPDATEs status (on_hold → closed/resolved),
+and UPDATEs shared_with_vendor when forwarding a PII-stripped version to
+the relevant vendor. A background-style recheck
+(ep_recheck_all_pending_partner_credits(), run opportunistically on
+admin page loads rather than via a cron job) periodically UPDATEs
+partner_credit_status from awaiting_window to credited once the travel
+date is within 7 days of a resolved enquiry — and that same recheck is
+what triggers the INSERT into partner_earnings described above.
+
+
+19. sales
+----------------------------------------
+Use case: a manually-recorded confirmed booking — "this TRIP or ROAM
+actually sold, for this amount, to this buyer." Exists because there is no
+payment gateway or checkout flow in this project yet (see schema.sql §9);
+until one exists, a sale is something a vendor or admin types in after
+confirming payment offline, not something a webhook creates automatically.
+
+Relations: references exactly one of tours/roams (the same CHECK pattern
+as trip_enquiries — never both, never neither); vendor_user_id is a
+denormalized copy of tours.submitted_by_user_id taken at the moment the
+sale is logged (so it stays correct even if a TRIP is later reassigned or
+its submitter's account is removed); recorded_by_user_id is whichever
+user — vendor or admin — actually logged the row, and is required (never
+NULL, unlike vendor_user_id, since a ROAM sale has no vendor at all).
+
+Data movement: organizer-sales.php is the only writer — INSERTs a row
+when a vendor logs a sale against their own TRIP, or when an admin logs a
+sale against any TRIP or ROAM (ROAMS have no vendor, so vendor_user_id
+stays NULL on those rows — that revenue is admin-only by definition).
+organizer-sales.php and organizer.js's dashboards READ this table: a
+vendor's "my sales" view filters to their own vendor_user_id, an admin's
+view sees everything, both typically grouped by sale_date or by
+tour/voyage. This table is also where a referred booking's "base_amount"
+for partner_earnings ultimately comes from conceptually, even though the
+two tables aren't directly foreign-keyed to one another today — the
+actual trigger for crediting a partner is trip_enquiries reaching
+status='resolved' within the 7-day window (see #18 above and #4 in
+partner_earnings), not a sales INSERT itself. Logging a sale and resolving
+its originating enquiry are currently two separate admin actions that
+happen to usually occur together, not one atomic operation.
+
+
+PART 2 — END-TO-END USER JOURNEYS
+========================================
+
+Journey A — A customer enquires about a TRIP, referred by a partner
+----------------------------------------
+1. Customer browses destination-tours.html → tour-details.html (data from
+   datasets.js, merged live with public-trips.php via
+   public-catalogue-sync.js — READ-only, no writes yet).
+2. Customer fills in the enquiry form, optionally pastes in a PartnerID.
+   submit-trip-enquiry.php runs the honeypot/same-site/rate-limit checks
+   (possible WRITE to rate_limits), resolves the PartnerID against
+   partner_profiles (READ), and INSERTs one row into trip_enquiries with
+   status='on_hold', partner_user_id set, partner_credit_status=
+   'awaiting_window'.
+3. Admin opens organizer/approvals.html's enquiry queue — a READ of
+   trip_enquiries filtered to on_hold, newest first.
+4. Admin forwards a PII-stripped copy to the vendor (UPDATE
+   shared_with_vendor=1) and later, once the booking is actually
+   confirmed offline, UPDATEs status to 'resolved' and logs the booking by
+   INSERTing a row into sales.
+5. Some time later, once the travel date is within 7 days, the recheck
+   routine UPDATEs partner_credit_status to 'credited' and INSERTs the
+   corresponding partner_earnings row, snapshotting the current commission
+   rate and amount.
+6. The partner later sees that earning as "pending" on partner.html
+   (READ of partner_earnings where payout_id IS NULL), until the next
+   quarterly payout sweep INSERTs a partner_payouts row and UPDATEs that
+   earning's payout_id.
+
+Journey B — A vendor submits a new TRIP, gets approved, and it goes live
+----------------------------------------
+1. Vendor signs up via organizer/login.html → vendor-signup.php INSERTs
+   into users (account_type='vendor') and vendor_profiles
+   (review_status='pending') in one request.
+2. Admin approves in organizer/approvals.html → organizer-vendors.php
+   UPDATEs vendor_profiles.review_status to 'approved' AND INSERTs a new
+   partner_profiles row for that same user (every approved vendor can also
+   refer customers).
+3. Vendor logs in (organizer-login.php READs users, verifies password,
+   starts session) and authors a TRIP in organizer/authoring.html.
+   organizer-trips.php's "create" action INSERTs into tours at
+   status='pending_review', plus the four child tables (tour_inclusions,
+   tour_exclusions, tour_itinerary_days, tour_stays) via
+   ep_save_trip_children().
+4. Admin reviews the pending TRIP in organizer/approvals.html and approves
+   it → organizer-trips.php's "approve" action UPDATEs tours.status to
+   'published' and sets reviewed_by_user_id/reviewed_at.
+5. public-catalogue-sync.js's epSyncPublicTrips(), running on every public
+   catalogue page, picks up the newly-published row on its next page load
+   (a READ of public-trips.php, merged client-side into DESTINATIONS_DATA)
+   — no further database writes required for the TRIP to "go live."
+
+Journey C — A new ROAM is added, published, and an old one is paused
+----------------------------------------
+1. A developer/DBA with direct database access INSERTs the new ROAM by
+   hand into roams (listing data) and roam_details (the nine JSON
+   sections) — this step does NOT happen through organizer/approvals.html.
+   organizer-roams.php's "create"/"update" actions are deliberately
+   disabled (HTTP 410: "new rows must be added directly in the database"),
+   and the admin dashboard's own empty-state copy tells the admin the same
+   thing. The new row would typically be inserted at status='draft' (the
+   column default) or 'paused', so it isn't live the moment it's added.
+2. Admin opens organizer/approvals.html, sees the new ROAM in the list,
+   and clicks "Start" → organizer-roams.php's "publish" action UPDATEs
+   status to 'published' and stamps reviewed_by_user_id/reviewed_at.
+3. chrome.js's navbar sync (every page) and roams.html's own
+   epSyncPublicRoams() call both READ public-roams.php on their next load
+   and pick up the new ROAM automatically.
+4. Admin later decides to pause a different, older ROAM —
+   organizer-roams.php's "pause" action UPDATEs that row's status to
+   'paused'. The next READ from public-roams.php simply omits it; nothing
+   else needs to change for it to disappear from the public site. (Had the
+   admin instead chosen "Stop"/archive, that UPDATE would be one-way —
+   organizer-roams.php's own "publish" action explicitly refuses to bring
+   an archived ROAM back.)
+
+Journey D — General contact form + newsletter signup (no catalogue
+involved at all)
+----------------------------------------
+1. Visitor submits the footer newsletter form on any page →
+   subscribe.php INSERTs (or reactivates) a row in
+   newsletter_subscribers with confirmed_at still NULL (no confirmation
+   endpoint exists yet to change that — see table #7 above).
+2. Visitor separately submits the Contact Us form → connect.php INSERTs a
+   row into contact_messages after the shared honeypot/rate-limit checks.
+3. Admin reviews general messages in organizer/approvals.html — a READ
+   (and mark-as-read UPDATE) against contact_messages. Nothing here ever
+   touches trip_enquiries — the two inboxes are intentionally separate,
+   because a contact message isn't about any specific TRIP or ROAM.
+
+Journey E — A login lockout
+----------------------------------------
+1. An attacker (or a customer who mistyped their password) tries to log in
+   five times with the wrong password. Each attempt is a READ of users by
+   email, a bcrypt verification failure, and an UPDATE incrementing
+   failed_attempts.
+2. On the 5th failure, login.php's UPDATE also sets locked_until to 15
+   minutes in the future.
+3. Every login attempt in that window is now rejected before even
+   checking the password (a READ-only check against locked_until), so the
+   account is protected from further guesses regardless of whether the
+   attacker ever finds the right password.
+4. A successful login after the lockout window passes resets
+   failed_attempts to 0 and locked_until to NULL in the same UPDATE that
+   records last_login_at and regenerates the session ID.
+
+
+See also: README_DB.md (architecture/ERD/lifecycles), database/README.md
+(implementation status + pre-launch checklist), schema.sql (DDL),
+roam-details-fields.txt (the roam_details JSON contract in full).

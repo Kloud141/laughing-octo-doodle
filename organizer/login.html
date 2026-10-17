@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<link rel="icon" type="image/x-icon" href="../assets/favicon/favicon.ico"/>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16x16.png"/>
+<link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png"/>
+<link rel="manifest" href="../assets/favicon/site.webmanifest"/>
+<meta name="robots" content="noindex, nofollow"/>
+<title>EMBARK PEDIA | Organizer Portal — Login</title>
+
+<link href="../assets/css/fontawesome.css" rel="stylesheet"/>
+<link href="../assets/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="../assets/css/style.css" rel="stylesheet"/>
+<link href="../assets/css/responsive.css" rel="stylesheet"/>
+<link href="../assets/css/header-footer.css" rel="stylesheet"/>
+<link href="../auth/auth.css" rel="stylesheet"/>
+<link href="organizer.css" rel="stylesheet"/>
+</head>
+<body>
+<header class="ep-header" id="ep-header">
+  <div class="ep-header__wash" aria-hidden="true">
+    <svg viewBox="0 0 1440 140" preserveAspectRatio="none" focusable="false">
+      <path class="ep-header__wash-shape ep-header__wash-shape--1" d="M0,40 C220,90 380,0 620,35 C860,70 980,10 1220,45 C1330,60 1400,35 1440,40 L1440,140 L0,140 Z"></path>
+      <path class="ep-header__wash-shape ep-header__wash-shape--2" d="M0,70 C260,30 460,110 720,65 C960,25 1120,95 1440,55 L1440,140 L0,140 Z"></path>
+    </svg>
+  </div>
+  <div class="ep-header__bar">
+    <div class="ep-header__inner">
+      <nav class="ep-nav ep-nav--left" aria-label="Primary">
+        <ul>
+          <li><a class="ep-nav__link" href="../index.html">Home</a></li>
+          <li><a class="ep-nav__link" href="../contact/contact.html">Contact Us</a></li>
+        </ul>
+      </nav>
+      <div class="ep-header__logo">
+        <a href="../index.html" aria-label="Embark Pedia — home">
+          <img src="../assets/images/logo/primary-logo.png" alt="Embark Pedia" />
+        </a>
+      </div>
+      <nav class="ep-nav ep-nav--right" aria-label="Secondary">
+        <ul>
+          <li class="ep-nav__item"><span class="ep-organizer-badge">Organizer Portal</span></li>
+        </ul>
+      </nav>
+      <button class="ep-hamburger" id="ep-hamburger" type="button" aria-label="Open menu" aria-haspopup="true" aria-expanded="false" aria-controls="ep-drawer">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="ep-header__logo ep-header__logo--mobile">
+        <a href="../index.html" aria-label="Embark Pedia — home"><img src="../assets/images/logo/primary-logo.png" alt="Embark Pedia" /></a>
+      </div>
+    </div>
+  </div>
+  <div class="ep-drawer-backdrop" id="ep-drawer-backdrop" hidden></div>
+  <div class="ep-drawer" id="ep-drawer" aria-hidden="true">
+    <div class="ep-drawer__panel" role="dialog" aria-modal="true" aria-label="Site menu">
+      <button class="ep-drawer__close" id="ep-drawer-close" type="button" aria-label="Close menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M1 1l18 18M19 1L1 19" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+      <nav class="ep-drawer__nav" aria-label="Mobile">
+        <ul>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="../contact/contact.html">Contact Us</a></li>
+        </ul>
+      </nav>
+      <div class="ep-drawer__logo"><img src="../assets/images/logo/primary-logo.png" alt="Embark Pedia" /></div>
+    </div>
+  </div>
+</header>
+
+<main class="ep-auth-main">
+  <div class="ep-auth-split">
+    <div class="ep-auth-hero">
+      <div class="ep-auth-hero__wash" aria-hidden="true">
+        <svg viewBox="0 0 700 500" preserveAspectRatio="none" focusable="false">
+          <path fill="#9CCC65" opacity="0.35" d="M0,120 C160,60 260,180 420,110 C540,60 620,140 700,90 L700,0 L0,0 Z"></path>
+          <path fill="#E91E63" opacity="0.18" d="M0,500 C180,420 320,500 480,430 C580,390 640,460 700,420 L700,500 Z"></path>
+        </svg>
+      </div>
+      <div class="ep-auth-hero__content">
+        <p class="ep-auth-hero__brand">Embark Pedia</p>
+        <h1 class="ep-auth-hero__title">Run your roams from <em>one dashboard</em></h1>
+        <p class="ep-auth-hero__subtitle">Vendors publish and manage Trips, track their own sales, and handle enquiries. Admins review submissions, manage vendors, and publish ROAMS — all from the organizer portal.</p>
+      </div>
+    </div>
+
+    <div class="ep-auth-card">
+      <div class="ep-auth-card__inner">
+        <img class="ep-auth-card__logo" src="../assets/images/logo/primary-logo.png" alt="Embark Pedia" />
+
+        <div class="ep-auth-tabs" id="ep-auth-tabs" role="tablist" aria-label="Login or Vendor Sign Up" data-active="login">
+          <span class="ep-auth-tabs__indicator" aria-hidden="true"></span>
+          <button class="ep-auth-tab" type="button" role="tab" data-tab="login" aria-selected="true" aria-controls="ep-panel-login" id="ep-tab-login">Login</button>
+          <button class="ep-auth-tab" type="button" role="tab" data-tab="signup" aria-selected="false" aria-controls="ep-panel-signup" id="ep-tab-signup" tabindex="-1">Vendor Sign Up</button>
+        </div>
+
+        <section class="ep-auth-panel" id="ep-panel-login" role="tabpanel" aria-labelledby="ep-tab-login">
+          <h2>Welcome back</h2>
+          <p class="ep-auth-lede">Sign in to your organizer dashboard.</p>
+
+          <div class="ep-role-toggle" id="ep-role-toggle" data-role="vendor">
+            <button type="button" class="ep-role-option" data-role="vendor" aria-pressed="true">Vendor</button>
+            <button type="button" class="ep-role-option" data-role="partner" aria-pressed="false">Partner</button>
+            <button type="button" class="ep-role-option" data-role="admin" aria-pressed="false">Admin</button>
+          </div>
+
+          <div class="ep-form-msg" id="ep-login-msg" role="status" aria-live="polite"></div>
+
+          <form id="ep-org-login-form" novalidate>
+            <input type="hidden" name="as" id="li-as" value="vendor" />
+            <div class="ep-field">
+              <label for="li-email">Email<span class="req">*</span></label>
+              <input id="li-email" name="email" type="email" autocomplete="username" placeholder="you@agency.com" required />
+              <p class="ep-field__error"></p>
+            </div>
+
+            <div class="ep-field">
+              <label for="li-password">Password<span class="req">*</span></label>
+              <div class="ep-password-wrap">
+                <input id="li-password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required />
+                <button type="button" class="ep-password-toggle" data-target="li-password" aria-label="Show password">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+              <p class="ep-field__error"></p>
+            </div>
+
+            <!-- Honeypot: hidden from real visitors via CSS; checked in organizer-login.php -->
+            <div class="ep-hp-field" aria-hidden="true">
+              <label for="li-website">Leave this field empty</label>
+              <input id="li-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <div class="ep-check-row">
+              <label><input type="checkbox" id="li-remember" name="remember" /> Remember me</label>
+              <a class="ep-forgot-link" href="#" id="ep-forgot-open">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="ep-auth-submit">
+              <span class="ep-spinner" aria-hidden="true"></span>
+              <span class="ep-btn-label">Login</span>
+            </button>
+          </form>
+
+          <aside class="ep-demo-access" aria-label="Local trial login credentials">
+            <strong>Local trial logins</strong>
+            <p>These accounts work with the browser-only mock backend in this project.</p>
+            <div class="ep-demo-access__row"><span>Partner</span><code>partner.trial@embarkpedia.com</code><code>TrialPartner#2026</code></div>
+            <div class="ep-demo-access__row"><span>Vendor</span><code>vendor.trial@embarkpedia.com</code><code>TrialVendor#2026</code></div>
+            <div class="ep-demo-access__row"><span>Admin</span><code>admin.trial@embarkpedia.com</code><code>TrialAdmin#2026</code></div>
+            <small>Demo data stays in this browser. Do not deploy the mock backend to production.</small>
+          </aside>
+
+          <p class="ep-auth-switch">Don't have a vendor account? <button type="button" data-switch-to="signup">Sign up</button></p>
+        </section>
+
+        <section class="ep-auth-panel" id="ep-panel-forgot" role="tabpanel" aria-labelledby="ep-forgot-open" hidden>
+          <h2>Reset your password</h2>
+          <p class="ep-auth-lede">Enter your vendor or partner account email and we'll send you a new temporary password. (Admin accounts don't use self-service reset — contact another admin.)</p>
+
+          <div class="ep-form-msg" id="ep-forgot-msg" role="status" aria-live="polite"></div>
+
+          <form id="ep-forgot-form" novalidate>
+            <div class="ep-field">
+              <label for="fp-email">Email<span class="req">*</span></label>
+              <input id="fp-email" name="email" type="email" autocomplete="username" placeholder="you@agency.com" required />
+              <p class="ep-field__error"></p>
+            </div>
+
+            <div class="ep-hp-field" aria-hidden="true">
+              <label for="fp-website">Leave this field empty</label>
+              <input id="fp-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <button type="submit" class="ep-auth-submit">
+              <span class="ep-spinner" aria-hidden="true"></span>
+              <span class="ep-btn-label">Send temporary password</span>
+            </button>
+          </form>
+
+          <p class="ep-auth-switch"><button type="button" id="ep-forgot-close">Back to login</button></p>
+        </section>
+
+        <section class="ep-auth-panel" id="ep-panel-signup" role="tabpanel" aria-labelledby="ep-tab-signup" hidden>
+          <h2>Become an Embark Pedia vendor</h2>
+          <p class="ep-auth-lede">Submit Trips for review and reach travellers across the site. Admin accounts are provisioned internally and not created here.</p>
+
+          <div class="ep-form-msg" id="ep-signup-msg" role="status" aria-live="polite"></div>
+
+          <form id="ep-vendor-signup-form" novalidate>
+            <div class="ep-field">
+              <label for="su-org">Organization / Agency Name<span class="req">*</span></label>
+              <input id="su-org" name="org_name" type="text" placeholder="Wanderlust Tours Pvt. Ltd." required />
+              <p class="ep-field__error"></p>
+            </div>
+
+            <div class="ep-field-row">
+              <div class="ep-field">
+                <label for="su-fname">Contact First Name<span class="req">*</span></label>
+                <input id="su-fname" name="contact_fname" type="text" autocomplete="given-name" placeholder="Asha" required />
+                <p class="ep-field__error"></p>
+              </div>
+              <div class="ep-field">
+                <label for="su-lname">Contact Last Name<span class="req">*</span></label>
+                <input id="su-lname" name="contact_lname" type="text" autocomplete="family-name" placeholder="Rao" required />
+                <p class="ep-field__error"></p>
+              </div>
+            </div>
+
+            <div class="ep-field">
+              <label for="su-contact">Business Phone<span class="req">*</span></label>
+              <input id="su-contact" name="contact" type="tel" autocomplete="tel" placeholder="+91 98765 43210" required />
+              <p class="ep-field__error"></p>
+            </div>
+
+            <div class="ep-field">
+              <label for="su-email">Business Email<span class="req">*</span></label>
+              <input id="su-email" name="email" type="email" autocomplete="email" placeholder="you@agency.com" required />
+              <p class="ep-field__error"></p>
+            </div>
+
+            <div class="ep-field">
+              <label for="su-website">Website (optional)</label>
+              <input id="su-website" name="business_website" type="url" placeholder="https://agency.com" />
+              <p class="ep-field__error"></p>
+            </div>
+
+            <div class="ep-field">
+              <label for="su-about">About your agency (optional)</label>
+              <textarea id="su-about" name="about" rows="3" maxlength="2000" placeholder="A line or two about the trips you run."></textarea>
+              <p class="ep-field__error"></p>
+            </div>
+
+            <div class="ep-field">
+              <label for="su-password">Password<span class="req">*</span></label>
+              <div class="ep-password-wrap">
+                <input id="su-password" name="password" type="password" autocomplete="new-password" placeholder="At least 8 characters" required />
+                <button type="button" class="ep-password-toggle" data-target="su-password" aria-label="Show password">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+              <div class="ep-strength" id="su-strength" data-level="0">
+                <div class="ep-strength__bars"><span></span><span></span><span></span><span></span></div>
+                <span class="ep-strength__label" id="su-strength-label"></span>
+              </div>
+              <p class="ep-field__error"></p>
+            </div>
+
+            <div class="ep-field">
+              <label for="su-confirm">Confirm Password<span class="req">*</span></label>
+              <div class="ep-password-wrap">
+                <input id="su-confirm" name="confirm" type="password" autocomplete="new-password" placeholder="Re-enter your password" required />
+                <button type="button" class="ep-password-toggle" data-target="su-confirm" aria-label="Show password">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+              <p class="ep-field__error"></p>
+            </div>
+
+            <div class="ep-field">
+              <label for="su-captcha-input">Captcha<span class="req">*</span></label>
+              <div class="ep-captcha">
+                <canvas id="su-captcha-canvas" width="130" height="44" role="img" aria-label="Captcha image"></canvas>
+                <button type="button" class="ep-captcha-refresh" id="su-captcha-refresh" aria-label="Refresh captcha">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 11A8 8 0 1 0 19 15"/><path d="M20 5v6h-6"/></svg>
+                </button>
+                <input class="ep-captcha-input" id="su-captcha-input" type="text" placeholder="Enter code" autocomplete="off" required />
+              </div>
+              <p class="ep-field__error"></p>
+            </div>
+
+            <!-- Honeypot: hidden from real visitors via CSS; checked in vendor-signup.php -->
+            <div class="ep-hp-field" aria-hidden="true">
+              <label for="su-hp-website">Leave this field empty</label>
+              <input id="su-hp-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <div class="ep-check-row">
+              <label><input type="checkbox" id="su-terms" name="terms" required /> I agree to the <a href="../support/terms-of-service.html">Terms &amp; Conditions</a></label>
+            </div>
+
+            <button type="submit" class="ep-auth-submit">
+              <span class="ep-spinner" aria-hidden="true"></span>
+              <span class="ep-btn-label">Create Vendor Account</span>
+            </button>
+          </form>
+
+          <p class="ep-auth-switch">Already registered? <button type="button" data-switch-to="login">Login</button></p>
+        </section>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="ep-footer ep-footer--bar" id="ep-footer">
+  <div class="ep-footer__bottom">
+    <p>&copy; <span id="ep-footer-year">2026</span> Embark Pedia. Organizer Portal.</p>
+    <div class="ep-footer__bottom-links">
+      <a href="../support/terms-of-service.html">Terms of Service</a>
+      <a href="../support/privacy-policy.html">Privacy Policy</a>
+      <a href="../index.html">Back to main site</a>
+    </div>
+  </div>
+</footer>
+
+<script defer src="../assets/js/bootstrap.bundle.min.js"></script>
+<script defer src="../assets/js/chrome.js"></script>
+<script src="../assets/js/mock-backend.js"></script>
+<script defer src="organizer.js"></script>
+</body>
+</html>

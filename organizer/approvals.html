@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<link rel="icon" type="image/x-icon" href="../assets/favicon/favicon.ico"/>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16x16.png"/>
+<link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png"/>
+<link rel="manifest" href="../assets/favicon/site.webmanifest"/>
+<meta name="robots" content="noindex, nofollow"/>
+<title>EMBARK PEDIA | Organizer Portal — Review &amp; Approvals</title>
+
+<link href="../assets/css/fontawesome.css" rel="stylesheet"/>
+<link href="../assets/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="../assets/css/style.css" rel="stylesheet"/>
+<link href="../assets/css/responsive.css" rel="stylesheet"/>
+<link href="../assets/css/header-footer.css" rel="stylesheet"/>
+<link href="organizer.css" rel="stylesheet"/>
+</head>
+<body>
+<header class="ep-header" id="ep-header">
+  <div class="ep-header__wash" aria-hidden="true">
+    <svg viewBox="0 0 1440 140" preserveAspectRatio="none" focusable="false">
+      <path class="ep-header__wash-shape ep-header__wash-shape--1" d="M0,40 C220,90 380,0 620,35 C860,70 980,10 1220,45 C1330,60 1400,35 1440,40 L1440,140 L0,140 Z"></path>
+      <path class="ep-header__wash-shape ep-header__wash-shape--2" d="M0,70 C260,30 460,110 720,65 C960,25 1120,95 1440,55 L1440,140 L0,140 Z"></path>
+    </svg>
+  </div>
+  <div class="ep-header__bar">
+    <div class="ep-header__inner">
+      <nav class="ep-nav ep-nav--left" aria-label="Primary">
+        <ul><li><a class="ep-nav__link" href="../index.html">Main Site</a></li></ul>
+      </nav>
+      <div class="ep-header__logo">
+        <a href="../index.html" aria-label="Embark Pedia — home"><img src="../assets/images/logo/primary-logo.png" alt="Embark Pedia" /></a>
+      </div>
+      <nav class="ep-nav ep-nav--right" aria-label="Secondary">
+        <ul>
+          <li class="ep-nav__item"><span class="ep-organizer-badge">Organizer Portal</span></li>
+          <li class="ep-nav__item"><button class="ep-btn ep-btn--pill ep-org-logout-btn" id="ep-org-logout" type="button">Log Out</button></li>
+        </ul>
+      </nav>
+      <button class="ep-hamburger" id="ep-hamburger" type="button" aria-label="Open menu" aria-haspopup="true" aria-expanded="false" aria-controls="ep-drawer">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="ep-header__logo ep-header__logo--mobile">
+        <a href="../index.html"><img src="../assets/images/logo/primary-logo.png" alt="Embark Pedia" /></a>
+      </div>
+    </div>
+  </div>
+  <div class="ep-drawer-backdrop" id="ep-drawer-backdrop" hidden></div>
+  <div class="ep-drawer" id="ep-drawer" aria-hidden="true">
+    <div class="ep-drawer__panel" role="dialog" aria-modal="true" aria-label="Site menu">
+      <button class="ep-drawer__close" id="ep-drawer-close" type="button" aria-label="Close menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M1 1l18 18M19 1L1 19" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+      <nav class="ep-drawer__nav" aria-label="Mobile"><ul><li><a href="../index.html">Main Site</a></li></ul></nav>
+      <div class="ep-drawer__org">
+        <span class="ep-organizer-badge">Organizer Portal</span>
+        <button class="ep-btn ep-btn--pill ep-org-logout-btn" type="button">Log Out</button>
+      </div>
+      <div class="ep-drawer__logo"><img src="../assets/images/logo/primary-logo.png" alt="Embark Pedia" /></div>
+    </div>
+  </div>
+</header>
+
+<div class="ep-org-shell" id="ep-org-shell" data-page="approvals">
+  <aside class="ep-org-sidebar">
+    <div class="ep-org-identity">
+      <p class="ep-org-identity__name" id="ep-org-name">—</p>
+      <p class="ep-org-identity__role" id="ep-org-role">—</p>
+    </div>
+    <button class="ep-org-nav-btn" data-section="dashboard">Overview</button>
+    <button class="ep-org-nav-btn" data-section="vendors">Vendor Approvals</button>
+    <button class="ep-org-nav-btn" data-section="partners">Partners</button>
+    <button class="ep-org-nav-btn" data-section="trip-approvals">Trip Approvals</button>
+    <button class="ep-org-nav-btn" data-section="sales-overview">Sales — All Vendors</button>
+    <button class="ep-org-nav-btn" data-section="enquiries">Enquiry Forwarder</button>
+    <div class="ep-org-nav-divider"></div>
+    <a class="ep-org-nav-btn ep-org-switch-btn" href="authoring.html">Open Authoring Workspace</a>
+  </aside>
+
+  <main class="ep-org-main">
+    <section class="ep-org-section" id="sec-dashboard">
+      <h2>Overview</h2>
+      <p class="ep-org-lede">Platform-wide status at a glance.</p>
+      <div class="ep-org-stats" id="dashboard-stats"></div>
+    </section>
+
+    <section class="ep-org-section" id="sec-vendors">
+      <h2>Vendor Approvals</h2>
+      <p class="ep-org-lede">Review applications, suspend or reinstate accounts, onboard a vendor directly, or delete one entirely.</p>
+      <div class="ep-org-card">
+        <div class="ep-org-table-wrap">
+          <table class="ep-org-table">
+            <thead><tr><th>Organization / Contact</th><th>Trips</th><th>Total Sales</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="vendors-table-body"><tr class="ep-org-empty-row"><td colspan="5">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="ep-org-card">
+        <h3>Onboard a Vendor Directly</h3>
+        <p class="ep-org-lede" style="margin-bottom:14px;">Creates a pre-approved vendor account — use this instead of the public signup when you're bringing a partner on yourself.</p>
+        <div class="ep-org-form-msg" id="onboard-form-msg"></div>
+        <form class="ep-org-form" id="onboard-vendor-form">
+          <div class="ep-field"><label for="ob-org">Organization Name*</label><input id="ob-org" type="text" required/></div>
+          <div class="ep-org-form-grid">
+            <div class="ep-field"><label for="ob-fname">Contact First Name*</label><input id="ob-fname" type="text" required/></div>
+            <div class="ep-field"><label for="ob-lname">Contact Last Name*</label><input id="ob-lname" type="text" required/></div>
+          </div>
+          <div class="ep-org-form-grid">
+            <div class="ep-field"><label for="ob-contact">Phone*</label><input id="ob-contact" type="tel" required/></div>
+            <div class="ep-field"><label for="ob-email">Email*</label><input id="ob-email" type="email" required/></div>
+          </div>
+          <div class="ep-field"><label for="ob-password">Temporary Password*</label><input id="ob-password" type="text" required placeholder="Share via a secure channel afterwards"/></div>
+          <button type="submit" class="ep-org-btn ep-org-btn--primary">Onboard Vendor</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="ep-org-section" id="sec-partners">
+      <h2>Partners</h2>
+      <p class="ep-org-lede">Every approved vendor gets one of these automatically. Edit a partner's profit-share tier here at any time — it only ever applies to referrals credited from now on, never to history already on the books. Payouts run once a quarter; "Run Payout" sweeps everything still pending into one record.</p>
+      <div class="ep-org-card">
+        <div class="ep-org-table-wrap">
+          <table class="ep-org-table">
+            <thead><tr><th>Partner / Contact</th><th>Type</th><th>Tier</th><th>Referrals</th><th>Pending Payout</th><th>Total Paid</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="partners-table-body"><tr class="ep-org-empty-row"><td colspan="8">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="ep-org-card">
+        <h3>Onboard a Stand-Alone Partner</h3>
+        <p class="ep-org-lede" style="margin-bottom:14px;">For someone who refers clients but isn't a vendor. (A vendor already gets a Partner ID automatically on approval — manage that one from Vendor Approvals above instead.)</p>
+        <div class="ep-org-form-msg" id="onboard-partner-form-msg"></div>
+        <form class="ep-org-form" id="onboard-partner-form">
+          <div class="ep-field"><label for="op-display-name">Name or Company Name*</label><input id="op-display-name" type="text" required/></div>
+          <label class="ep-partner-checkbox" for="op-is-company">
+            <input id="op-is-company" type="checkbox"/>
+            <span class="ep-partner-checkbox__copy">
+              <strong>This is a company, not an individual</strong>
+              <small>Select this for a business or organization; otherwise, leave it unchecked.</small>
+            </span>
+          </label>
+          <div class="ep-org-form-grid">
+            <div class="ep-field"><label for="op-fname">Contact First Name*</label><input id="op-fname" type="text" required/></div>
+            <div class="ep-field"><label for="op-lname">Contact Last Name*</label><input id="op-lname" type="text" required/></div>
+          </div>
+          <div class="ep-org-form-grid">
+            <div class="ep-field"><label for="op-contact">Phone*</label><input id="op-contact" type="tel" required/></div>
+            <div class="ep-field"><label for="op-email">Email*</label><input id="op-email" type="email" required/></div>
+          </div>
+          <div class="ep-org-form-grid">
+            <div class="ep-field"><label for="op-percent">Profit Share % (30–50)*</label><input id="op-percent" type="number" min="30" max="50" step="0.01" value="30" required/></div>
+            <div class="ep-field"><label for="op-tier-label">Tier Label</label><input id="op-tier-label" type="text" placeholder="e.g. Gold (optional)"/></div>
+          </div>
+          <div class="ep-field"><label for="op-password">Temporary Password*</label><input id="op-password" type="text" required placeholder="Share via a secure channel afterwards"/></div>
+          <button type="submit" class="ep-org-btn ep-org-btn--primary">Onboard Partner</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="ep-org-section" id="sec-trip-approvals">
+      <h2>Trip Approvals</h2>
+      <p class="ep-org-lede">Trips submitted by vendors, awaiting review before they go live.</p>
+      <div class="ep-org-card">
+        <div class="ep-org-table-wrap">
+          <table class="ep-org-table">
+            <thead><tr><th>Title</th><th>Destination</th><th>Duration</th><th>Price</th><th>Vendor</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="trip-approvals-table-body"><tr class="ep-org-empty-row"><td colspan="7">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="ep-org-section" id="sec-sales-overview">
+      <h2>Sales — All Vendors</h2>
+      <p class="ep-org-lede">Aggregate and per-vendor revenue from the manual sales ledger.</p>
+      <div class="ep-org-stats" id="sales-summary"></div>
+      <div class="ep-org-card">
+        <h3>By Vendor</h3>
+        <div class="ep-org-table-wrap">
+          <table class="ep-org-table"><thead><tr><th>Vendor</th><th>Sales</th><th>Revenue</th></tr></thead>
+            <tbody id="sales-by-vendor-body"><tr class="ep-org-empty-row"><td colspan="3">Loading…</td></tr></tbody></table>
+        </div>
+      </div>
+      <div class="ep-org-card">
+        <h3>All Sales</h3>
+        <div class="ep-org-table-wrap">
+          <table class="ep-org-table"><thead><tr><th>Trip</th><th>Buyer</th><th>Date</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody id="sales-table-body"><tr class="ep-org-empty-row"><td colspan="5">Loading…</td></tr></tbody></table>
+        </div>
+      </div>
+    </section>
+
+    <section class="ep-org-section" id="sec-enquiries">
+      <h2>Enquiry Forwarder</h2>
+      <p class="ep-org-lede">Full customer detail stays here. Forwarding a trip enquiry shares the trip/date/message with its vendor — never the customer's name, email, or phone.</p>
+      <div class="ep-org-card">
+        <div class="ep-org-card-head">
+          <h3>Trip Enquiries</h3>
+          <button type="button" class="ep-org-btn ep-org-btn--ghost" id="recheck-partner-credits-btn" title="Resolved enquiries referred by a partner only credit them once travel is within 7 days — use this to check right now instead of waiting for the next page load.">Check due partner credits</button>
+        </div>
+        <div class="ep-org-table-wrap">
+          <table class="ep-org-table">
+            <thead><tr><th>Customer</th><th>Trip / Vendor</th><th>Preferred Date</th><th>Pax</th><th>Partner</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="trip-enquiries-body"><tr class="ep-org-empty-row"><td colspan="7">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="ep-org-card">
+        <div class="ep-org-card-head"><h3>Contact-Us Messages</h3></div>
+        <div class="ep-org-table-wrap">
+          <table class="ep-org-table">
+            <thead><tr><th>From</th><th>Type</th><th>Subject</th><th>Message</th><th>Status</th></tr></thead>
+            <tbody id="contact-enquiries-body"><tr class="ep-org-empty-row"><td colspan="5">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer class="ep-footer ep-footer--bar" id="ep-footer">
+  <div class="ep-footer__bottom">
+    <p>&copy; <span id="ep-footer-year">2026</span> Embark Pedia. Organizer Portal.</p>
+    <div class="ep-footer__bottom-links"><a href="../index.html">Back to main site</a></div>
+  </div>
+</footer>
+
+<script defer src="../assets/js/bootstrap.bundle.min.js"></script>
+<script defer src="../assets/js/chrome.js"></script>
+<script src="../assets/js/mock-backend.js"></script>
+<script defer src="organizer.js"></script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+/* ============================================================
+   Embark Pedia :: Customer "My Account" page
+   ------------------------------------------------------------
+   Scoped to /account/ only. Reuses ../auth/auth.css wholesale for
+   every form control (.ep-field, .ep-form-msg, .ep-auth-submit,
+   .ep-strength, etc.) — the same cross-folder reuse organizer.css
+   already does for /organizer/login.html — and the sitewide tokens
+   from assets/css/header-footer.css. This file adds only the page
+   shell (a simple single-column account page, not the auth split-
+   screen layout) and a couple of account-specific tweaks.
+   ============================================================ */
+
+.ep-acct-shell {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 48px 20px 80px;
+}
+@media (max-width: 640px) { .ep-acct-shell { padding: 32px 16px 60px; } }
+
+.ep-acct-head { margin-bottom: 22px; }
+.ep-acct-head h1 {
+  font-family: var(--f-heading);
+  font-size: 2rem;
+  color: var(--color-accent);
+  margin: 0 0 6px;
+}
+.ep-acct-head .ep-auth-lede { margin: 0; }
+
+.ep-acct-card {
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--ep-radius);
+  box-shadow: 0 4px 14px var(--shadow-soft);
+  padding: 26px 28px;
+  margin-bottom: 22px;
+}
+@media (max-width: 480px) { .ep-acct-card { padding: 20px 18px; } }
+
+.ep-acct-card h2 {
+  font-family: var(--f-heading);
+  font-size: 1.3rem;
+  color: var(--color-accent);
+  margin: 0 0 18px;
+}
+
+/* Two forms stacked in one card (name + contact/email): give the first
+   a visual break before the second rather than letting them run
+   together. */
+#ep-acct-name-form { padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px dashed var(--border-soft); }
+
+.ep-acct-submit { width: auto; padding-left: 28px; padding-right: 28px; }
+@media (max-width: 480px) { .ep-acct-submit { width: 100%; } }
+
+/* The one-time "split your name" banner reuses organizer.css's
+   .ep-org-banner look-and-feel (warm highlight, not an error state) —
+   redefined here rather than imported since organizer.css is scoped to
+   /organizer/ only. */
+#ep-acct-split-banner {
+  background: color-mix(in srgb, var(--color-secondary-2) 25%, white);
+  border: 1px solid color-mix(in srgb, var(--color-secondary-2) 60%, transparent);
+  color: var(--color-accent);
+  border-radius: var(--ep-radius);
+  padding: 14px 18px;
+  margin-bottom: 18px;
+  font-size: 0.92rem;
+}
+
+/* ---- Danger Zone (deactivate / delete) ----------------------------
+   Same visual treatment as organizer.css's .ep-org-card--danger /
+   .ep-org-btn--ghost / .ep-org-btn--danger / .ep-org-row-actions
+   (redefined here, not imported — see that file's own scope note). */
+.ep-acct-card--danger {
+  border-color: color-mix(in srgb, var(--color-primary) 35%, var(--border-soft));
+}
+.ep-acct-card--danger h2 { color: var(--color-primary); }
+.ep-acct-danger-copy { font-size: 0.88rem; color: var(--text-muted); margin: 0 0 16px; }
+
+.ep-acct-row-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.ep-acct-btn {
+  font-family: var(--f-accent);
+  font-weight: 700;
+  font-size: 0.85rem;
+  border-radius: 999px;
+  padding: 10px 20px;
+  border: 1px solid var(--border-soft);
+  cursor: pointer;
+  transition: background var(--ep-transition), border-color var(--ep-transition);
+}
+.ep-acct-btn--ghost { background: transparent; color: var(--color-accent); }
+.ep-acct-btn--ghost:hover { background: color-mix(in srgb, var(--color-secondary-1) 60%, white); }
+.ep-acct-btn--danger { background: #fff; border-color: var(--color-primary); color: var(--color-primary); }
+.ep-acct-btn--danger:hover { background: color-mix(in srgb, var(--color-primary) 10%, white); }
+
+.ep-acct-confirm {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border-soft);
+}
+

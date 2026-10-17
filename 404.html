@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,follow">
+  <meta name="theme-color" content="#173f36">
+  <title>404 — A wrong turn | Embark Pedia</title>
+  <style>
+    :root{color-scheme:light;--forest:#173f36;--ink:#20352e;--paper:#f4efe3;--clay:#c87954;--gold:#d7b96b;--muted:#66756c}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100svh;background:var(--paper);color:var(--ink);font-family:Georgia,"Times New Roman",serif;display:grid;place-items:center;padding:28px;overflow:hidden}
+    .page{position:relative;width:min(1080px,100%);min-height:620px;background:var(--forest);color:var(--paper);border-radius:8px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;box-shadow:0 28px 90px #173f3626}
+    .landscape{position:absolute;inset:0 0 0 37%;width:63%;height:100%;opacity:.92}
+    .copy{position:relative;z-index:1;align-self:center;padding:clamp(34px,7vw,88px);max-width:610px}
+    .brand{font:600 11px/1.4 Arial,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:#e4c982}
+    .eyebrow{margin:72px 0 10px;color:#e4c982;font:600 12px/1.4 Arial,sans-serif;letter-spacing:.18em;text-transform:uppercase}
+    h1{font-size:clamp(52px,9vw,104px);line-height:.88;letter-spacing:-.065em;margin:0 0 22px;font-weight:500}
+    .intro{font-size:clamp(18px,2.5vw,24px);line-height:1.35;max-width:370px;margin:0 0 12px}
+    .detail{font:14px/1.7 Arial,sans-serif;color:#c7d0c9;max-width:355px;margin:0}
+    .actions{display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin-top:34px}
+    .home{display:inline-flex;align-items:center;gap:10px;padding:13px 18px;background:var(--gold);color:#193c32;text-decoration:none;border-radius:2px;font:700 12px Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+    .home:focus-visible{outline:3px solid white;outline-offset:4px}
+    .back{color:#e7e5d9;font:13px Arial,sans-serif;text-underline-offset:4px}
+    .coordinates{position:absolute;bottom:26px;left:clamp(34px,7vw,88px);z-index:1;color:#a9bbb0;font:10px Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase}
+    @media(max-width:700px){body{padding:14px}.page{min-height:690px;grid-template-columns:1fr}.landscape{inset:auto 0 0;width:100%;height:55%;opacity:.58}.copy{align-self:start;padding:34px 28px}.eyebrow{margin-top:56px}.coordinates{left:28px;bottom:20px}}
+    @media(prefers-reduced-motion:no-preference){.landscape{animation:arrive 1.2s ease-out both}@keyframes arrive{from{opacity:0;transform:translateY(12px)}to{opacity:.92;transform:translateY(0)}}}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <svg class="landscape" viewBox="0 0 760 700" role="img" aria-labelledby="map-title">
+      <title id="map-title">A hand-drawn route wandering through a quiet mountain landscape</title>
+      <defs>
+        <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#496d5e"/><stop offset="1" stop-color="#173f36"/></linearGradient>
+        <pattern id="grain" width="90" height="90" patternUnits="userSpaceOnUse"><circle cx="12" cy="18" r="1" fill="#fff" opacity=".16"/><circle cx="65" cy="43" r="1" fill="#fff" opacity=".11"/><circle cx="41" cy="77" r=".8" fill="#fff" opacity=".12"/></pattern>
+      </defs>
+      <path fill="url(#sky)" d="M0 0h760v700H0z"/>
+      <path fill="#9aa78a" opacity=".42" d="m0 392 121-122 78 74 118-181 109 144 83-92 132 139 119-95v441H0z"/>
+      <path fill="#6f8b74" opacity=".74" d="m0 473 151-104 94 64 131-143 123 165 81-79 106 91 74-48v281H0z"/>
+      <path fill="#315f4d" d="m0 554 156-96 103 55 137-111 103 102 111-76 150 99v173H0z"/>
+      <path d="M0 611c112-48 182 44 287-3s143-59 229-6 143-3 244-56" fill="none" stroke="#d7b96b" stroke-width="3" stroke-dasharray="3 12" stroke-linecap="round"/>
+      <circle cx="479" cy="602" r="9" fill="#f4efe3" stroke="#d7b96b" stroke-width="5"/>
+      <circle cx="718" cy="546" r="7" fill="#d7b96b"/>
+      <path d="M522 284c0-25 20-45 45-45s45 20 45 45v66h-90z" fill="#e6d5a5" opacity=".88"/>
+      <path d="M512 287h110l-55-57z" fill="#c87954"/>
+      <rect x="548" y="306" width="15" height="44" fill="#496d5e"/>
+      <rect width="760" height="700" fill="url(#grain)"/>
+    </svg>
+    <section class="copy" aria-labelledby="title">
+      <div class="brand">Embark Pedia · Journeys with purpose</div>
+      <p class="eyebrow">Field note · 404</p>
+      <h1 id="title">A wrong<br>turn.</h1>
+      <p class="intro">This page isn’t on the map.</p>
+      <p class="detail">The address may have changed, or the trail may have ended here. Let’s get you back to a place you know.</p>
+      <nav class="actions" aria-label="Recovery options">
+        <a class="home" href="/index.html"><span aria-hidden="true">←</span> Back to the beginning</a>
+        <a class="back" href="/">Return to the site home</a>
+      </nav>
+    </section>
+    <div class="coordinates">Somewhere between here and the next good story</div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,686 @@
+ROAM DETAIL PAGE — DATA FIELD REFERENCE
+========================================
+Companion to schema.sql's `roams` and `roam_details` tables and to
+assets/js/roam-details-data.js, which is the current client-side source
+for the structure documented here. This is the API/JSON contract for a
+future database-backed read/write flow; the existing site still loads JS.
+
+WHERE THIS FITS
+---------------
+roams/roam-list/roam.html is now the ONE template for every roam's full
+detail page (it replaced arabisya-indino.html, coromandel-crest.html and
+goanique-ganeshika.html — three near-identical hand-copied files). It's
+opened as:
+
+    roams/roam-list/roam.html?slug=<slug>
+
+and assets/js/roam-render.js reads ROAM_DETAILS[<slug>] (currently a
+plain JS object loaded from assets/js/roam-details-data.js) and builds
+the whole page from it. The `roams` table in schema.sql already covers
+the lightweight CARD data (title, route, dates, thumbnail, blurb) shown
+on roams.html and in the nav dropdown — this file covers everything
+needed for the FULL page, one level deeper.
+
+To go live with a real backend: replace the two <script> tags that load
+roams-data.js / roam-details-data.js with a fetch("/api/roams/<slug>")
+call that returns the same shape described below, and nothing in
+roam-render.js needs to change.
+
+TOP-LEVEL OBJECT
+-----------------
+Keyed by `slug` (same slug as the `roams` table / card data).
+
+  slug          string   URL identifier, e.g. "goanique-ganeshika".
+                         Should equal roams.slug (FK / join key).
+  pageTitle     string   Browser tab title, e.g. "Goanique Ganeshika".
+                         (Usually just the roam's title; kept separate
+                         in case it should ever differ, e.g. for SEO.)
+
+1. HERO (top banner)
+---------------------
+  hero.image        string   Full-bleed banner photo URL.
+  hero.imageAlt      string   Alt text for that photo.
+  hero.by            string   Byline, e.g. "By the team of EPSOT Round Trip".
+  hero.title         string   Large H1 — the roam's display name.
+  hero.subtitle      string   One-line pitch under the title.
+  hero.meta          array    List of short "chip" strings shown as
+                               pills, e.g. ["<strong>14–22 Oct 2026</strong>",
+                               "Mumbai → Gujarat → Jaipur → Delhi", "9 days"].
+                               Order matters; may contain inline <strong>.
+
+2. ABOUT (the "why this trip" narrative block)
+-----------------------------------------------
+  about.heading      string   Section heading, e.g. "Immersion over sightseeing".
+  about.paragraphs    array    Ordered list of paragraph strings (may contain
+                                inline <a>/<strong>/em>). Rendered in order.
+  about.quote         string   Single pull-quote shown in a <blockquote>.
+                                Optional — omit/empty to skip rendering it.
+  about.objectives    array    Bullet list of trip objectives/goals.
+  about.image         string   Supporting photo next to the text.
+  about.imageAlt       string   Alt text for that photo.
+  about.badge         string   Small overlay label on the photo,
+                                e.g. "9 days, 4 states".
+
+3. GALLERY ("where this trip actually takes you")
+---------------------------------------------------
+  gallery.heading     string   Section heading.
+  gallery.subtitle    string   Section subheading/intro line. Optional.
+  gallery.cards       array    2–4 photo cards, each:
+    .image              string   Card photo URL.
+    .imageAlt            string   Alt text.
+    .title              string   Card heading, e.g. "The Pink City".
+    .text               string   1–2 sentence card description.
+
+4. ITINERARY ("Day by day")
+-----------------------------
+  itinerary.heading    string   Section heading.
+  itinerary.subtitle   string   Section intro line. Optional.
+  itinerary.items      array    ORDERED list, mixing two item shapes —
+                                 order in the array is the display order,
+                                 so a note can sit between any two days:
+
+    { type: "day",
+      dayNumber:  string   e.g. "1" (kept as a string: some itineraries
+                           use "1–2" for a combined day),
+      festive:    boolean  true gives the day a highlighted style
+                           (used for the main festival/event day),
+      title:      string   Day's heading, e.g. "Arrival in Mumbai + Sanctuary".
+      activities: array    Ordered bullet list for that day. }
+
+    { type: "note",
+      text: string  A callout between two days, e.g. "Day 7 tends to
+                     run long — keep Day 6 short." Rendered as a plain
+                     highlighted strip, not inside a day card. }
+
+5. INCLUSIONS / EXCLUSIONS ("What's covered")
+-------------------------------------------------
+  inclusions.heading        string   Section heading, e.g. "What's covered".
+  inclusions.includedTitle  string   Left-column heading, e.g. "What's included".
+  inclusions.included       array    Bullet list of what's included.
+  inclusions.includedNote   string   Small note under the included list.
+                                     Optional.
+  inclusions.excludedTitle  string   Right-column heading, e.g. "What's not included".
+  inclusions.excluded       array    Bullet list of what's excluded.
+  inclusions.excludedNote   string   Small note under the excluded list.
+                                     Optional.
+
+6. PACKING ("What to pack")
+------------------------------
+  packing.heading     string   Section heading.
+  packing.subtitle    string   Section intro line. Optional.
+  packing.categories  array    Each:
+    .title    string   Category name, e.g. "Clothing", "Rain gear".
+    .items    array    Bullet list for that category.
+
+7. ELIGIBILITY + PRICE ("Who this trip is for")
+---------------------------------------------------
+  eligibility.heading     string   Left-column heading, e.g. "Who this trip is for".
+  eligibility.criteria    array    Bullet list of who should join.
+  eligibility.note        string   Small italic note under the criteria.
+                                    Optional.
+  eligibility.priceLabel  string   e.g. "Trip cost".
+  eligibility.price       string   Display price, e.g. "USD 380–415"
+                                    (kept as a display string, not split
+                                    into numeric min/max, since ranges and
+                                    currency formatting vary per roam).
+  eligibility.priceNote   string   Small note under the price,
+                                    e.g. what's NOT included in that figure.
+
+8. FAQ ("Questions people ask")
+-----------------------------------
+  faq.heading   string   Section heading.
+  faq.items     array    Each:
+    .question    string   Shown as a collapsed <summary>.
+    .answer      string   Shown when expanded.
+
+9. FOOTER (closing "Thank You" band, specific to this roam)
+----------------------------------------------------------------
+  footer.image         string   Full-bleed closing photo.
+  footer.imageAlt        string   Alt text.
+  footer.thanksText     string   Large heading, normally "Thank You".
+  footer.dates          string   Trip dates shown under the heading.
+  footer.logo           string   Small roam-specific logo/crest image.
+  footer.logoAlt         string   Alt text for the logo.
+  footer.presentedBy    string   e.g. "Presented by EPSOT | Embark Pedia".
+
+NOT included here (lives in the `roams` summary table instead, or is
+site-wide rather than per-roam): header/nav, the site-wide footer links
+(Terms/Privacy/Cancellation/FAQs), and social links.
+
+
+CURRENT DATABASE MAPPING
+========================
+`database/schema.sql` creates `roam_details` with one row per `roams.id`
+and JSON columns for `hero`, `about`, `gallery`, `itinerary`, `inclusions`,
+`packing`, `eligibility`, `faq`, and `footer`. `page_title` is stored in its
+own column. An API can join `roams` to `roam_details`, then return the merged
+object in the shape consumed by `roam-render.js`.
+
+The organizer requirements also call for named hotels/check-ins. Those are
+stored in ordered rows in `roam_stays` (one row per check-in/hotel stop), not
+inside the JSON. `roams.days` stores the duration for listings and organizer
+validation. The usual 9–11 day ROAM range is a server-side warning/validation
+rule, not a database CHECK constraint.
+
+This JSON-backed approach preserves the existing renderer contract and is a
+reasonable fit while the admin/editorial application is not yet implemented.
+If itinerary days, FAQs, gallery cards, or packing categories later need
+independent queries or drag-and-drop editing, normalize them into child tables
+with a parent ID and an explicit `position` column. The same current-vs-future
+boundary is documented in `database/README.md`.
+
+
+SAMPLE JSON — TWO ADDITIONAL (HYPOTHETICAL) ROAMS
+====================================================
+These follow the exact shape ROAM_DETAILS[<slug>] expects, so they can
+be pasted straight into assets/js/roam-details-data.js (or used as
+fixtures/seed data for `roam_details`) to try the template with roams
+beyond the current three.
+
+{
+  "himalayan-hearthglow": {
+    "slug": "himalayan-hearthglow",
+    "pageTitle": "Himalayan Hearthglow",
+    "hero": {
+      "image": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?fm=jpg&q=80&w=2400&auto=format&fit=crop",
+      "imageAlt": "Prayer flags strung across a Himalayan mountainside at dawn",
+      "by": "By the team of EPSOT Round Trip",
+      "title": "Himalayan Hearthglow",
+      "subtitle": "Mountain stillness, monastery mornings, and a Losar new year lit by butter lamps.",
+      "meta": [
+        "<strong>2–10 February 2027</strong>",
+        "Delhi → Manali → Spiti Valley",
+        "9 days"
+      ]
+    },
+    "about": {
+      "heading": "Stillness as a destination, not a detour",
+      "paragraphs": [
+        "Himalayan Hearthglow follows the Losar calendar into Spiti Valley, timing arrival to the Tibetan New Year's butter-lamp lighting and monastery chanting at Key and Tabo.",
+        "Days alternate between high-altitude drives through lunar-looking terrain and slow mornings in homestays, with no more than one long transfer on any single day."
+      ],
+      "quote": "“Some trips show you a country. This one asks you to sit still in it for a while.”",
+      "objectives": [
+        "Prioritise altitude acclimatisation over itinerary density — no back-to-back long drives.",
+        "Centre the trip around a real local festival (Losar), not a staged performance of one.",
+        "Pair every monastery visit with unstructured time, so it never feels like a checklist.",
+        "Keep group size small enough that homestay hosts remain the centre of the day, not the group."
+      ],
+      "image": "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?fm=jpg&q=80&w=1600&auto=format&fit=crop",
+      "imageAlt": "Key Monastery perched on a hillside in Spiti Valley",
+      "badge": "9 days, 2 states"
+    },
+    "gallery": {
+      "heading": "Where this trip actually takes you",
+      "subtitle": "From Manali's pine forests to Spiti's high-desert monasteries.",
+      "cards": [
+        {
+          "image": "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?fm=jpg&q=80&w=1400&auto=format&fit=crop",
+          "imageAlt": "Key Monastery, Spiti Valley",
+          "title": "Key & Tabo Monasteries",
+          "text": "Butter-lamp lighting and chanting at two of the Himalayas' oldest working monasteries."
+        },
+        {
+          "image": "https://images.unsplash.com/photo-1626808642875-0aa545482dfb?fm=jpg&q=80&w=1400&auto=format&fit=crop",
+          "imageAlt": "Chandratal Lake under a clear sky",
+          "title": "Chandratal Lake",
+          "text": "A high-altitude 'moon lake' stop en route, weather permitting."
+        },
+        {
+          "image": "https://images.unsplash.com/photo-1626808643146-6a1b7f5f1d0f?fm=jpg&q=80&w=1400&auto=format&fit=crop",
+          "imageAlt": "Prayer flags over a Spiti village homestay",
+          "title": "Village Homestays",
+          "text": "Two nights with local families instead of hotels — meals cooked together, not served."
+        }
+      ]
+    },
+    "itinerary": {
+      "heading": "Day by day",
+      "subtitle": "Nine days, built around altitude and the Losar calendar, not a fixed clock.",
+      "items": [
+        {
+          "type": "day",
+          "dayNumber": "1",
+          "festive": false,
+          "title": "Arrival in Delhi + Overnight to Manali",
+          "activities": [
+            "Arrival in Delhi, light orientation walk near the stay.",
+            "Early dinner, then an overnight Volvo to Manali."
+          ]
+        },
+        {
+          "type": "day",
+          "dayNumber": "2",
+          "festive": false,
+          "title": "Manali Acclimatisation Day",
+          "activities": [
+            "Arrive Manali by morning, check in, rest.",
+            "A short, flat walk around Old Manali — nothing strenuous.",
+            "Early night ahead of the drive to Spiti."
+          ]
+        },
+        {
+          "type": "note",
+          "text": "Days 3–4 involve long mountain-road transfers with limited phone signal — flag any medical needs before departure."
+        },
+        {
+          "type": "day",
+          "dayNumber": "3",
+          "festive": false,
+          "title": "Manali to Spiti via Kunzum Pass",
+          "activities": [
+            "Early start, packed breakfast.",
+            "Crossing Kunzum Pass, weather dependent.",
+            "Arrive Spiti Valley homestay by evening."
+          ]
+        },
+        {
+          "type": "day",
+          "dayNumber": "4",
+          "festive": false,
+          "title": "Chandratal Lake",
+          "activities": [
+            "Day trip to Chandratal Lake, included if roads are open.",
+            "Picnic lunch by the lake.",
+            "Return to the homestay for a family-cooked dinner."
+          ]
+        },
+        {
+          "type": "day",
+          "dayNumber": "5",
+          "festive": true,
+          "title": "Losar New Year at Key Monastery",
+          "activities": [
+            "Dawn butter-lamp lighting ceremony.",
+            "Monastery chanting and a community meal.",
+            "Evening free time in the village."
+          ]
+        },
+        {
+          "type": "day",
+          "dayNumber": "6",
+          "festive": false,
+          "title": "Tabo Monastery + Village Walk",
+          "activities": [
+            "Visit Tabo Monastery's thousand-year-old murals.",
+            "Guided walk through the surrounding village.",
+            "Slow afternoon — no planned activity after 3pm."
+          ]
+        },
+        {
+          "type": "day",
+          "dayNumber": "7",
+          "festive": false,
+          "title": "Spiti to Manali",
+          "activities": [
+            "Return drive to Manali.",
+            "Evening free for last-minute shopping or rest."
+          ]
+        },
+        {
+          "type": "day",
+          "dayNumber": "8",
+          "festive": false,
+          "title": "Manali Free Day",
+          "activities": [
+            "Fully unscheduled day — café hopping, short hikes, or just sleeping in.",
+            "Optional group dinner in the evening."
+          ]
+        },
+        {
+          "type": "day",
+          "dayNumber": "9",
+          "festive": false,
+          "title": "Overnight Return to Delhi",
+          "activities": [
+            "Free morning in Manali.",
+            "Evening Volvo back to Delhi; trip ends on arrival."
+          ]
+        }
+      ]
+    },
+    "inclusions": {
+      "heading": "What's covered",
+      "includedTitle": "What's included",
+      "included": [
+        "Lodging in Manali (hotel) and Spiti (homestays).",
+        "All inland transfers, including the Delhi–Manali–Delhi Volvo legs.",
+        "Breakfast and dinner on all days.",
+        "Monastery visit coordination and a local Spiti guide."
+      ],
+      "includedNote": "Lunches are either included on transfer days or left flexible on free days — covered in the day-by-day notes.",
+      "excludedTitle": "What's not included",
+      "excluded": [
+        "Flights to/from Delhi.",
+        "Oxygen cylinders or private medical evacuation, if required.",
+        "Chandratal Lake entry is weather-dependent and not guaranteed.",
+        "Any extended stay beyond Day 9."
+      ],
+      "excludedNote": "Altitude sickness risk is real above 4,000m — a basic fitness check-in happens before confirming your seat."
+    },
+    "packing": {
+      "heading": "What to pack",
+      "subtitle": "Cold-weather gear matters more than festival wear on this one.",
+      "categories": [
+        {
+          "title": "Cold-weather layers",
+          "items": [
+            "A proper down jacket — nights drop below freezing.",
+            "Thermal base layers, at least two sets.",
+            "Woollen cap, gloves, and a scarf or buff."
+          ]
+        },
+        {
+          "title": "Footwear",
+          "items": [
+            "Insulated, waterproof trekking boots.",
+            "Thick wool socks, several pairs."
+          ]
+        },
+        {
+          "title": "Health",
+          "items": [
+            "Any personal prescription medication.",
+            "Basic altitude-sickness medication (consult your doctor beforehand)."
+          ]
+        },
+        {
+          "title": "Utilities & docs",
+          "items": [
+            "Power bank — charging points are limited in Spiti.",
+            "Physical ID copy, in case of checkpoint stops."
+          ]
+        }
+      ]
+    },
+    "eligibility": {
+      "heading": "Who this trip is for",
+      "criteria": [
+        "Comfortable with basic physical exertion at high altitude.",
+        "No serious cardiac or respiratory conditions, given the altitude.",
+        "Fine with limited connectivity for 3–4 days.",
+        "Rotary youth, Rotaractors, and friends of Rotary families are warmly encouraged to join."
+      ],
+      "note": "This is a slower, quieter trip than our other roams — it suits travellers looking for stillness over a packed schedule.",
+      "priceLabel": "Trip cost",
+      "price": "USD 420–460",
+      "priceNote": "per person · flights, oxygen support (if needed) and personal shopping not included"
+    },
+    "faq": {
+      "heading": "Questions people ask",
+      "items": [
+        {
+          "question": "Is altitude sickness a serious risk?",
+          "answer": "It's a real consideration above 4,000m. The itinerary builds in acclimatisation days, and basic medication guidance is shared before departure — but anyone with existing heart or lung conditions should consult a doctor first."
+        },
+        {
+          "question": "Will there be phone signal throughout?",
+          "answer": "No — signal drops out for stretches of Days 3–4 and intermittently in Spiti. Let your contacts know in advance."
+        },
+        {
+          "question": "What's a Spiti homestay actually like?",
+          "answer": "A private or shared room in a local family's home, with meals cooked and eaten together rather than served separately — it's simple, not luxury."
+        }
+      ]
+    },
+    "footer": {
+      "image": "https://images.unsplash.com/photo-1626808642875-0aa545482dfb?fm=jpg&q=80&w=2400&auto=format&fit=crop",
+      "imageAlt": "Prayer flags against a Himalayan sunset",
+      "thanksText": "Thank You",
+      "dates": "2–10 February 2027",
+      "logo": "../../assets/images/roams/himalayan-hearthglow-logo.png",
+      "logoAlt": "Himalayan Hearthglow logo",
+      "presentedBy": "Presented by EPSOT | Embark Pedia"
+    }
+  },
+
+  "bengal-monsoon-canvas": {
+    "slug": "bengal-monsoon-canvas",
+    "pageTitle": "Bengal Monsoon Canvas",
+    "hero": {
+      "image": "https://images.unsplash.com/photo-1558431382-27e303142255?fm=jpg&q=80&w=2400&auto=format&fit=crop",
+      "imageAlt": "Howrah Bridge over the Hooghly River under a monsoon sky",
+      "by": "By the team of EPSOT Round Trip",
+      "title": "Bengal Monsoon Canvas",
+      "subtitle": "Kolkata's literary soul, Shantiniketan's open-air classrooms, and monsoon light over the Hooghly.",
+      "meta": [
+        "<strong>5–12 August 2027</strong>",
+        "Kolkata → Shantiniketan → Sundarbans",
+        "8 days"
+      ]
+    },
+    "about": {
+      "heading": "A city of poets, in its favourite season",
+      "paragraphs": [
+        "Bengal Monsoon Canvas times its arrival to the rains Kolkata is written about in — Tagore's Shantiniketan, century-old coffee houses, and the Sundarbans' mangrove waterways all look different wet than dry.",
+        "The pace is deliberately unhurried: this is a trip for people who'd rather sit in one good café for two hours than rush between ten landmarks."
+      ],
+      "quote": "“Where the mind is without fear and the head is held high” — the Shantiniketan visit is built around exactly that line.",
+      "objectives": [
+        "Treat Kolkata's café and literary culture as a destination in itself, not a stopover.",
+        "Visit Shantiniketan as a living campus, not a monument — classes permitting, sit in on an open-air session.",
+        "Take the Sundarbans by boat slowly, prioritising the mangrove ecosystem over a checklist of wildlife sightings.",
+        "Build in deliberate slack for monsoon weather delays, rather than fighting the season."
+      ],
+      "image": "https://images.unsplash.com/photo-1595815771614-ade9d652a65d?fm=jpg&q=80&w=1600&auto=format&fit=crop",
+      "imageAlt": "A narrow waterway through the Sundarbans mangrove forest",
+      "badge": "8 days, 1 state"
+    },
+    "gallery": {
+      "heading": "Where this trip actually takes you",
+      "subtitle": "City, campus, and river delta — three very different rhythms.",
+      "cards": [
+        {
+          "image": "https://images.unsplash.com/photo-1558431382-27e303142255?fm=jpg&q=80&w=1400&auto=format&fit=crop",
+          "imageAlt": "Howrah Bridge, Kolkata",
+          "title": "Kolkata by Tram and Coffee House",
+          "text": "College Street's book market, Indian Coffee House, and a tram ride down Esplanade."
+        },
+        {
+          "image": "https://images.unsplash.com/photo-1601297183305-6df142fffdf6?fm=jpg&q=80&w=1400&auto=format&fit=crop",
+          "imageAlt": "Open-air art class at a rural Bengal campus",
+          "title": "Shantiniketan",
+          "text": "Tagore's open-air university, the Kala Bhavana art school, and the weekly Sonajhuri haat market."
+        },
+        {
+          "image": "https://images.unsplash.com/photo-1595815771614-ade9d652a65d?fm=jpg&q=80&w=1400&auto=format&fit=crop",
+          "imageAlt": "Boat on a Sundarbans waterway",
+          "title": "Sundarbans by Boat",
+          "text": "A slow two-day houseboat route through the mangroves, tides and birdlife permitting."
+        }
+      ]
+    },
+    "itinerary": {
+      "heading": "Day by day",
+      "subtitle": "Eight days, split evenly between city, campus, and delta.",
+      "items": [
+        {
+          "type": "day",
+          "dayNumber": "1",
+          "festive": false,
+          "title": "Arrival in Kolkata",
+          "activities": [
+            "Arrival, check-in, and a settling-in evening.",
+            "Short walk around the neighbourhood, early dinner."
+          ]
+        },
+        {
+          "type": "day",
+          "dayNumber": "2",
+          "festive": false,
+          "title": "College Street & Coffee House",
+          "activities": [
+            "Morning at College Street's second-hand book market.",
+            "Lunch nearby, then an afternoon at Indian Coffee House.",
+            "Evening tram ride down Esplanade."
+          ]
+        },
+        {
+          "type": "day",
+          "dayNumber": "3",
+          "festive": false,
+          "title": "Kolkata Heritage Walk",
+          "activities": [
+            "Victoria Memorial and the Maidan.",
+            "Howrah Bridge viewpoint at golden hour.",
+            "Free evening — monsoon permitting."
+          ]
+        },
+        {
+          "type": "note",
+          "text": "Day 4 travel to Shantiniketan is by train and can run late in heavy monsoon — evening plans there stay flexible."
+        },
+        {
+          "type": "day",
+          "dayNumber": "4",
+          "festive": false,
+          "title": "Travel to Shantiniketan",
+          "activities": [
+            "Morning train to Bolpur, transfer to Shantiniketan.",
+            "Light orientation walk around the campus on arrival."
+          ]
+        },
+        {
+          "type": "day",
+          "dayNumber": "5",
+          "festive": true,
+          "title": "Shantiniketan Campus & Sonajhuri Haat",
+          "activities": [
+            "Morning visit to Kala Bhavana and the open-air classrooms.",
+            "Afternoon at the Sonajhuri weekly haat market.",
+            "Evening Baul folk music session, if available that week."
+          ]
+        },
+        {
+          "type": "day",
+          "dayNumber": "6",
+          "festive": false,
+          "title": "Travel to the Sundarbans",
+          "activities": [
+            "Return train to Kolkata, then road transfer to the Sundarbans jetty.",
+            "Board the houseboat by evening."
+          ]
+        },
+        {
+          "type": "day",
+          "dayNumber": "7",
+          "festive": false,
+          "title": "Sundarbans Waterways",
+          "activities": [
+            "Full day cruising the mangrove channels.",
+            "Village stop for lunch and a short walk.",
+            "Evening on the boat deck, river willing."
+          ]
+        },
+        {
+          "type": "day",
+          "dayNumber": "8",
+          "festive": false,
+          "title": "Return to Kolkata + Departure",
+          "activities": [
+            "Morning cruise back to the jetty, road transfer to Kolkata.",
+            "Trip ends on arrival back in the city."
+          ]
+        }
+      ]
+    },
+    "inclusions": {
+      "heading": "What's covered",
+      "includedTitle": "What's included",
+      "included": [
+        "Lodging in Kolkata, Shantiniketan, and the Sundarbans houseboat.",
+        "All inland train, road, and boat transfers on the itinerary.",
+        "Breakfast and dinner on all days, lunch on travel days.",
+        "A local guide for the Kolkata heritage walk."
+      ],
+      "includedNote": "Wildlife sightings in the Sundarbans are never guaranteed — the itinerary is built around the waterways themselves, not a sighting checklist.",
+      "excludedTitle": "What's not included",
+      "excluded": [
+        "Flights to/from Kolkata.",
+        "Any entry fees beyond what's listed in the itinerary.",
+        "Personal shopping at College Street or Sonajhuri haat.",
+        "Any extended stay beyond Day 8."
+      ],
+      "excludedNote": "August is peak monsoon — some outdoor plans may shift with a day's notice depending on weather."
+    },
+    "packing": {
+      "heading": "What to pack",
+      "subtitle": "This is a genuinely wet-weather trip — pack like it.",
+      "categories": [
+        {
+          "title": "Rain gear",
+          "items": [
+            "A proper rain jacket, not just an umbrella.",
+            "A dry-bag or waterproof pouch for electronics.",
+            "Quick-dry clothing — cotton stays wet for days in this humidity."
+          ]
+        },
+        {
+          "title": "Footwear",
+          "items": [
+            "Waterproof sandals or river shoes for the Sundarbans leg.",
+            "A spare pair of dry shoes for Kolkata city days."
+          ]
+        },
+        {
+          "title": "Health",
+          "items": [
+            "Mosquito repellent — essential for the Sundarbans.",
+            "Personal medication, plus basic rehydration salts."
+          ]
+        },
+        {
+          "title": "Utilities & docs",
+          "items": [
+            "A good book — College Street will tempt you into buying more.",
+            "Passport copy and ID."
+          ]
+        }
+      ]
+    },
+    "eligibility": {
+      "heading": "Who this trip is for",
+      "criteria": [
+        "Comfortable with humidity, rain, and a slower daily pace.",
+        "Interested in literature, art, or ecology rather than a landmark checklist.",
+        "Fine with a two-day stretch on a houseboat with limited connectivity.",
+        "Rotary youth, Rotaractors, and friends of Rotary families are warmly encouraged to join."
+      ],
+      "note": "Not a trip for travellers who want a packed, high-energy schedule — the pace here is intentionally slow.",
+      "priceLabel": "Trip cost",
+      "price": "USD 360–395",
+      "priceNote": "per person · flights, shopping and houseboat upgrades not included"
+    },
+    "faq": {
+      "heading": "Questions people ask",
+      "items": [
+        {
+          "question": "Will we actually see wildlife in the Sundarbans?",
+          "answer": "Maybe — this is a wild mangrove delta, not a zoo. Birdlife is likely; tiger sightings are rare and never promised."
+        },
+        {
+          "question": "Is the houseboat comfortable?",
+          "answer": "It's simple but clean — shared or twin cabins, basic bathrooms, and meals cooked on board. It's an experience, not a luxury cruise."
+        },
+        {
+          "question": "What if monsoon rain cancels a day's plan?",
+          "answer": "The itinerary has built-in slack for exactly this — an outdoor activity may be swapped for an indoor one (a museum, a café, a workshop) with a day's notice."
+        }
+      ]
+    },
+    "footer": {
+      "image": "https://images.unsplash.com/photo-1601297183305-6df142fffdf6?fm=jpg&q=80&w=2400&auto=format&fit=crop",
+      "imageAlt": "Sonajhuri haat market stalls under monsoon clouds",
+      "thanksText": "Thank You",
+      "dates": "5–12 August 2027",
+      "logo": "../../assets/images/roams/bengal-monsoon-canvas-logo.png",
+      "logoAlt": "Bengal Monsoon Canvas logo",
+      "presentedBy": "Presented by EPSOT | Embark Pedia"
+    }
+  }
+}
+
+(These two are illustrative only — not wired into assets/js/roam-details-data.js
+or the `roams` summary table. Drop them into a `roam-details-data.js`
+along with matching `roams-data.js` summary entries, or use as seed rows
+for `roam_details`, to try the template with a 4th/5th roam.)

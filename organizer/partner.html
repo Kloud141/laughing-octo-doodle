@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<link rel="icon" type="image/x-icon" href="../assets/favicon/favicon.ico"/>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16x16.png"/>
+<link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png"/>
+<link rel="manifest" href="../assets/favicon/site.webmanifest"/>
+<meta name="robots" content="noindex, nofollow"/>
+<title>EMBARK PEDIA | Organizer Portal — Partner Hub</title>
+
+<link href="../assets/css/fontawesome.css" rel="stylesheet"/>
+<link href="../assets/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="../assets/css/style.css" rel="stylesheet"/>
+<link href="../assets/css/responsive.css" rel="stylesheet"/>
+<link href="../assets/css/header-footer.css" rel="stylesheet"/>
+<link href="organizer.css" rel="stylesheet"/>
+</head>
+<body>
+<header class="ep-header" id="ep-header">
+  <div class="ep-header__wash" aria-hidden="true">
+    <svg viewBox="0 0 1440 140" preserveAspectRatio="none" focusable="false">
+      <path class="ep-header__wash-shape ep-header__wash-shape--1" d="M0,40 C220,90 380,0 620,35 C860,70 980,10 1220,45 C1330,60 1400,35 1440,40 L1440,140 L0,140 Z"></path>
+      <path class="ep-header__wash-shape ep-header__wash-shape--2" d="M0,70 C260,30 460,110 720,65 C960,25 1120,95 1440,55 L1440,140 L0,140 Z"></path>
+    </svg>
+  </div>
+  <div class="ep-header__bar">
+    <div class="ep-header__inner">
+      <nav class="ep-nav ep-nav--left" aria-label="Primary">
+        <ul><li><a class="ep-nav__link" href="../index.html">Main Site</a></li></ul>
+      </nav>
+      <div class="ep-header__logo">
+        <a href="../index.html" aria-label="Embark Pedia — home"><img src="../assets/images/logo/primary-logo.png" alt="Embark Pedia" /></a>
+      </div>
+      <nav class="ep-nav ep-nav--right" aria-label="Secondary">
+        <ul>
+          <li class="ep-nav__item"><span class="ep-organizer-badge">Organizer Portal</span></li>
+          <li class="ep-nav__item"><button class="ep-btn ep-btn--pill ep-org-logout-btn" id="ep-org-logout" type="button">Log Out</button></li>
+        </ul>
+      </nav>
+      <button class="ep-hamburger" id="ep-hamburger" type="button" aria-label="Open menu" aria-haspopup="true" aria-expanded="false" aria-controls="ep-drawer">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="ep-header__logo ep-header__logo--mobile">
+        <a href="../index.html"><img src="../assets/images/logo/primary-logo.png" alt="Embark Pedia" /></a>
+      </div>
+    </div>
+  </div>
+  <div class="ep-drawer-backdrop" id="ep-drawer-backdrop" hidden></div>
+  <div class="ep-drawer" id="ep-drawer" aria-hidden="true">
+    <div class="ep-drawer__panel" role="dialog" aria-modal="true" aria-label="Site menu">
+      <button class="ep-drawer__close" id="ep-drawer-close" type="button" aria-label="Close menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M1 1l18 18M19 1L1 19" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+      <nav class="ep-drawer__nav" aria-label="Mobile"><ul><li><a href="../index.html">Main Site</a></li></ul></nav>
+      <div class="ep-drawer__org">
+        <span class="ep-organizer-badge">Organizer Portal</span>
+        <button class="ep-btn ep-btn--pill ep-org-logout-btn" type="button">Log Out</button>
+      </div>
+      <div class="ep-drawer__logo"><img src="../assets/images/logo/primary-logo.png" alt="Embark Pedia" /></div>
+    </div>
+  </div>
+</header>
+
+<div class="ep-org-shell" id="ep-partner-shell" data-page="partner">
+  <aside class="ep-org-sidebar">
+    <div class="ep-org-identity">
+      <p class="ep-org-identity__name" id="ep-org-name">—</p>
+      <p class="ep-org-identity__role" id="ep-org-role">Partner</p>
+      <span class="ep-partner-id-badge" id="ep-partner-id-badge" hidden></span>
+    </div>
+    <button class="ep-org-nav-btn" data-section="dashboard">Dashboard</button>
+    <button class="ep-org-nav-btn" data-section="sales">Sales</button>
+    <button class="ep-org-nav-btn" data-section="send-link">Send Link</button>
+    <button class="ep-org-nav-btn" data-section="profile">Profile</button>
+  </aside>
+
+  <main class="ep-org-main">
+    <section class="ep-org-section" id="sec-dashboard">
+      <h2>Welcome back</h2>
+      <p class="ep-org-lede">Your Partner ID, referral earnings and payout status, at a glance.</p>
+      <div class="ep-org-stats" id="dashboard-stats"></div>
+      <div class="ep-org-card">
+        <h3>How this works</h3>
+        <ol class="ep-partner-howitworks">
+          <li>Share your link from the <strong>Send Link</strong> tab, or give someone your Partner ID directly — they type it into the "Enquire about this trip" form on any trip page.</li>
+          <li>Admin reviews the enquiry and moves it through On-Hold → Resolved once the customer pays and an invoice is generated.</li>
+          <li>Once a resolved booking is within 7 days of travel, the pax and commission are credited to you automatically — see the Sales tab.</li>
+          <li>Pending payouts are paid out at the end of every 3rd month.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="ep-org-section" id="sec-sales">
+      <h2>Sales</h2>
+      <p class="ep-org-lede">Every referral you've been credited for, voyage by voyage.</p>
+      <div class="ep-org-stats" id="sales-summary"></div>
+      <div class="ep-org-card">
+        <div class="ep-org-card-head"><h3>Earnings by Voyage</h3></div>
+        <div class="ep-org-table-wrap">
+          <table class="ep-org-table">
+            <thead><tr><th>Voyage ID</th><th>Trip</th><th>Pax</th><th>Commission</th><th>Credited</th><th>Payout</th></tr></thead>
+            <tbody id="sales-table-body"><tr class="ep-org-empty-row"><td colspan="6">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="ep-org-card">
+        <div class="ep-org-card-head"><h3>Payout History</h3></div>
+        <div class="ep-org-table-wrap">
+          <table class="ep-org-table">
+            <thead><tr><th>Period</th><th>Amount</th><th>Paid On</th></tr></thead>
+            <tbody id="payouts-table-body"><tr class="ep-org-empty-row"><td colspan="3">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="ep-org-section" id="sec-send-link">
+      <h2>Send Link</h2>
+      <p class="ep-org-lede">Share any trip with your Partner ID already attached, so referrals are credited to you automatically.</p>
+      <div class="ep-org-card">
+        <h3>Your referral link</h3>
+        <p>Paste any Embark Pedia trip page URL below, or leave it blank to use the destinations page. Your Partner ID is appended as <code>?ref=</code> automatically.</p>
+        <div class="ep-field"><label for="send-link-input">Trip page URL (optional)</label><input id="send-link-input" type="url" placeholder="https://embarkpedia.com/destinations/tour-details.html?article=..."/></div>
+        <div class="ep-field"><label for="send-link-output">Your link</label>
+          <div class="ep-partner-link-row">
+            <input id="send-link-output" type="text" readonly/>
+            <button type="button" class="ep-org-btn ep-org-btn--accent" id="send-link-copy">Copy</button>
+          </div>
+        </div>
+        <div class="ep-org-form-msg" id="send-link-msg"></div>
+      </div>
+    </section>
+
+    <section class="ep-org-section" id="sec-profile">
+      <h2>Profile</h2>
+      <p class="ep-org-lede">Update your details, name, and password.</p>
+
+      <div class="ep-org-card">
+        <h3>Profile Details</h3>
+        <div class="ep-org-form-msg" id="profile-form-msg"></div>
+        <form class="ep-org-form" id="profile-form">
+          <div class="ep-field"><label for="profile-display-name">Name or Company Name*</label><input id="profile-display-name" type="text" required maxlength="180"/></div>
+          <label class="ep-partner-checkbox"><input id="profile-is-company" type="checkbox"/> This is a company, not an individual</label>
+          <div class="ep-org-form-grid">
+            <div class="ep-field"><label for="profile-fname">First Name*</label><input id="profile-fname" type="text" required/></div>
+            <div class="ep-field"><label for="profile-lname">Last Name*</label><input id="profile-lname" type="text" required/></div>
+          </div>
+          <div class="ep-org-form-grid">
+            <div class="ep-field"><label for="profile-contact">Contact Number*</label><input id="profile-contact" type="tel" required/></div>
+            <div class="ep-field"><label for="profile-email">Email (read-only)</label><input id="profile-email" type="email" disabled/></div>
+          </div>
+          <button type="submit" class="ep-org-btn ep-org-btn--primary">Save Profile</button>
+        </form>
+      </div>
+
+      <div class="ep-org-card">
+        <h3>Change Password</h3>
+        <div class="ep-org-form-msg" id="password-form-msg"></div>
+        <form class="ep-org-form" id="password-form">
+          <div class="ep-field"><label for="pw-current">Current Password*</label><input id="pw-current" type="password" required/></div>
+          <div class="ep-org-form-grid">
+            <div class="ep-field"><label for="pw-new">New Password*</label><input id="pw-new" type="password" required/></div>
+            <div class="ep-field"><label for="pw-confirm">Confirm New Password*</label><input id="pw-confirm" type="password" required/></div>
+          </div>
+          <button type="submit" class="ep-org-btn ep-org-btn--primary">Change Password</button>
+        </form>
+      </div>
+
+      <div class="ep-org-card ep-org-card--danger">
+        <h3>Danger Zone</h3>
+        <div class="ep-org-form-msg" id="danger-form-msg"></div>
+        <p>Deactivating logs you out and pauses your account until support reactivates it. Deleting is permanent and only possible if you have no commission history on file — otherwise, contact <a href="mailto:support@embarkpedia.com">support@embarkpedia.com</a>.</p>
+        <div class="ep-org-row-actions">
+          <button type="button" class="ep-org-btn ep-org-btn--ghost" id="deactivate-account-btn">Deactivate My Account</button>
+          <button type="button" class="ep-org-btn ep-org-btn--danger" id="delete-account-btn">Delete My Account</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer class="ep-footer ep-footer--bar" id="ep-footer">
+  <div class="ep-footer__bottom">
+    <p>&copy; <span id="ep-footer-year">2026</span> Embark Pedia. Organizer Portal.</p>
+    <div class="ep-footer__bottom-links"><a href="../index.html">Back to main site</a></div>
+  </div>
+</footer>
+
+<script defer src="../assets/js/bootstrap.bundle.min.js"></script>
+<script defer src="../assets/js/chrome.js"></script>
+<script src="../assets/js/mock-backend.js"></script>
+<script defer src="organizer.js"></script>
+</body>
+</html>

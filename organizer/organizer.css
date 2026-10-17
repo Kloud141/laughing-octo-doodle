@@ -1,0 +1,478 @@
+/* ============================================================
+   Embark Pedia :: Organizer Portal (partner + vendor + admin)
+   ------------------------------------------------------------
+   Scoped to /organizer/ only. Reuses the sitewide design tokens
+   from assets/css/header-footer.css (--f-heading/--f-body/--f-accent,
+   --color-primary/secondary-1/secondary-2/accent, --ep-radius) and,
+   on login.html, every class from ../auth/auth.css. This file adds
+   only what those two don't already cover: the account role toggle,
+   dashboard shell (sidebar + content), tables, status
+   badges, and forms for the authoring/review screens.
+   ============================================================ */
+
+/* ---------------- Header badge (organizer pages have no "Login" CTA) --- */
+.ep-organizer-badge {
+  font-family: var(--f-accent);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-secondary-2) 35%, transparent);
+  padding: 0.5em 1.1em;
+  border-radius: var(--ep-radius-pill);
+}
+
+/* header-footer.css hides .ep-nav--right (the badge + Log Out button)
+   entirely at <=991px along with the rest of the desktop nav, and the
+   mobile drawer it replaces that nav with never had its own copy of
+   either — so on a phone there was no way to log out. organizer.js
+   adds a second ".ep-org-logout-btn" into this wrapper (see
+   .ep-drawer__org in each organizer HTML page); this just lays it out
+   next to the badge, inside the drawer's existing flex column
+   (.ep-drawer__panel), above the logo that's pinned to the bottom. */
+.ep-drawer__org {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 16px;
+  margin-top: 4px;
+  border-top: 1px solid color-mix(in srgb, var(--text-primary) 12%, transparent);
+}
+.ep-drawer__org .ep-organizer-badge { font-size: 0.78rem; padding: 0.45em 0.9em; }
+
+/* ---------------- Minimal footer: just the dark bottom bar ------------- */
+.ep-footer--bar { padding: 0; }
+.ep-footer--bar .ep-footer__bottom { border-top: none; max-width: 1280px; margin: 0 auto; }
+
+/* ---------------- Role toggle (login.html) ------------------------------ */
+.ep-role-toggle {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 2px 0 20px;
+}
+.ep-role-option {
+  font-family: var(--f-accent);
+  font-weight: 700;
+  font-size: 0.86rem;
+  padding: 0.6em 0.4em;
+  border-radius: var(--ep-radius);
+  border: 2px solid var(--border-soft);
+  background: #fff;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--ep-transition);
+}
+.ep-role-option[aria-pressed="true"] {
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 12%, white);
+  color: var(--color-accent);
+}
+
+.ep-demo-access {
+  margin: 18px 0 8px;
+  padding: 14px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--ep-radius);
+  background: color-mix(in srgb, var(--color-secondary-1) 72%, white);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+.ep-demo-access > strong { display: block; color: var(--color-accent); font-family: var(--f-accent); font-size: 0.9rem; }
+.ep-demo-access > p { margin: 3px 0 9px; }
+.ep-demo-access__row { display: grid; grid-template-columns: 62px minmax(0, 1fr) auto; gap: 6px; align-items: center; padding: 5px 0; border-top: 1px solid var(--border-soft); }
+.ep-demo-access__row span { color: var(--color-accent); font-weight: 700; }
+.ep-demo-access__row code { color: var(--color-primary); overflow-wrap: anywhere; }
+.ep-demo-access > small { display: block; margin-top: 7px; }
+@media (max-width: 480px) {
+  .ep-demo-access__row { grid-template-columns: 55px 1fr; }
+  .ep-demo-access__row code:last-child { grid-column: 2; }
+}
+
+/* ============================================================
+   Dashboard shell
+   ============================================================ */
+.ep-org-shell {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: calc(100vh - var(--ep-header-h, 88px));
+  background: var(--color-secondary-1);
+}
+@media (max-width: 860px) {
+  .ep-org-shell { grid-template-columns: 1fr; }
+}
+
+.ep-org-sidebar {
+  background: #fff;
+  border-right: 1px solid var(--border-soft);
+  padding: 28px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+@media (max-width: 860px) {
+  .ep-org-sidebar { border-right: none; border-bottom: 1px solid var(--border-soft); flex-direction: row; overflow-x: auto; padding: 14px; }
+}
+
+.ep-org-identity { padding: 0 10px 18px; margin-bottom: 10px; border-bottom: 1px solid var(--border-soft); }
+@media (max-width: 860px) { .ep-org-identity { display: none; } }
+.ep-org-identity__name { font-family: var(--f-heading); font-weight: 700; font-size: 1.05rem; color: var(--color-accent); margin: 0 0 2px; }
+.ep-org-identity__role { font-family: var(--f-accent); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-primary); }
+.ep-org-identity__status { display: inline-block; margin-top: 8px; font-size: 0.78rem; padding: 3px 10px; border-radius: var(--ep-radius-pill); }
+
+.ep-org-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  font-family: var(--f-accent);
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  padding: 11px 12px;
+  border-radius: var(--ep-radius);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--ep-transition), color var(--ep-transition);
+}
+.ep-org-nav-btn:hover { background: color-mix(in srgb, var(--color-secondary-2) 20%, transparent); }
+.ep-org-nav-btn.is-active { background: var(--color-primary); color: #fff; }
+
+.ep-org-nav-divider { height: 1px; background: var(--border-soft); margin: 10px 4px; }
+@media (max-width: 860px) { .ep-org-nav-divider { display: none; } }
+
+.ep-org-switch-btn {
+  margin-top: auto;
+  border: 2px solid var(--color-secondary-2);
+  background: color-mix(in srgb, var(--color-secondary-2) 18%, white);
+}
+@media (max-width: 860px) { .ep-org-switch-btn { margin-top: 0; } }
+
+.ep-org-main { padding: 36px 40px; max-width: 1180px; }
+@media (max-width: 640px) { .ep-org-main { padding: 22px 16px; } }
+
+/* ============================================================
+   Phone-width in-page menu (<=640px)
+   ------------------------------------------------------------
+   Above 640px the sidebar is either a left column (desktop) or a
+   horizontally-scrolling row (860px, above) — both fine with a mouse
+   or a wide-enough thumb-scroll area. Below 640px neither is practical:
+   scrolling a row of nav buttons sideways to find "Profile" on a phone
+   is fiddly and doesn't "fit the screen". organizer.js replaces the
+   always-visible sidebar with a single toggle button + a dropdown panel
+   at this width (see initOrgMobileMenu() there); the CSS below only
+   hides the plain sidebar and styles that generated toggle/dropdown —
+   it does nothing on its own without the matching JS.
+
+   .ep-org-mobile-nav is a wrapper organizer.js inserts around the
+   toggle button + the sidebar (instead of placing the toggle directly
+   in .ep-org-shell). This matters because the dropdown panel below is
+   `position:absolute; top:100%`, which resolves against the nearest
+   *positioned* ancestor's box. If that ancestor were .ep-org-shell
+   itself, its box includes <main> too (the sidebar is taken out of
+   flow, but <main> isn't), so top:100% would land at the bottom of
+   ALL the page content instead of right under the toggle — which is
+   exactly the "dropdown renders below the table/cards" bug this was
+   fixed for. Scoping position:relative to this small wrapper instead
+   means its box is just the toggle's own height, so the dropdown
+   opens directly beneath it, overlaying the content below via
+   z-index, on every organizer page (authoring/approvals/partner).
+   ============================================================ */
+.ep-org-mobile-nav { position: relative; }
+.ep-org-menu-toggle { display: none; }
+@media (max-width: 640px) {
+  .ep-org-sidebar[data-js-menu="true"] {
+    display: none;
+    position: absolute;
+    z-index: 20;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    overflow-x: visible;
+    border-bottom: 1px solid var(--border-soft);
+    box-shadow: 0 10px 24px var(--shadow-strong);
+    max-height: calc(100vh - var(--ep-header-h, 88px) - 48px);
+    overflow-y: auto;
+  }
+  .ep-org-sidebar[data-js-menu="true"].is-open { display: flex; }
+
+  .ep-org-menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    background: #fff;
+    border: none;
+    border-bottom: 1px solid var(--border-soft);
+    padding: 14px 16px;
+    font-family: var(--f-accent);
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--color-accent);
+    cursor: pointer;
+  }
+  .ep-org-menu-toggle__current { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ep-org-menu-toggle__icon { flex: 0 0 auto; width: 18px; height: 18px; transition: transform var(--ep-transition); }
+  .ep-org-menu-toggle[aria-expanded="true"] .ep-org-menu-toggle__icon { transform: rotate(180deg); }
+}
+
+.ep-org-section { display: none; }
+.ep-org-section.is-active { display: block; }
+
+.ep-org-main h2 { font-family: var(--f-heading); font-size: 1.6rem; margin: 0 0 6px; color: var(--color-accent); }
+.ep-org-lede { color: var(--text-muted); margin: 0 0 26px; max-width: 60ch; }
+
+.ep-org-banner {
+  background: color-mix(in srgb, var(--color-secondary-2) 25%, white);
+  border: 1px solid color-mix(in srgb, var(--color-secondary-2) 60%, transparent);
+  color: var(--color-accent);
+  border-radius: var(--ep-radius);
+  padding: 14px 18px;
+  margin-bottom: 22px;
+  font-size: 0.92rem;
+}
+.ep-org-banner.is-warning { background: color-mix(in srgb, var(--color-primary) 14%, white); border-color: color-mix(in srgb, var(--color-primary) 50%, transparent); }
+
+/* ---- Stat cards ---- */
+.ep-org-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 16px; margin-bottom: 30px; }
+.ep-org-stat {
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--ep-radius);
+  padding: 18px 20px;
+  box-shadow: 0 4px 14px var(--shadow-soft);
+}
+.ep-org-stat__value { font-family: var(--f-heading); font-size: 1.7rem; color: var(--color-primary); }
+.ep-org-stat__label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+
+/* ---- Cards / panels ---- */
+.ep-org-card {
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--ep-radius);
+  padding: 24px 26px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 14px var(--shadow-soft);
+}
+.ep-org-card h3 { font-family: var(--f-heading); font-size: 1.15rem; margin: 0 0 14px; color: var(--color-accent); }
+.ep-org-card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.ep-org-card-head h3 { margin: 0; }
+.ep-org-card--danger { border-color: color-mix(in srgb, var(--color-primary) 35%, var(--border-soft)); }
+.ep-org-card--danger h3 { color: var(--color-primary); }
+
+/* Shared by the vendor Partner tab and organizer/partner.html */
+.ep-partner-id-badge {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 10px;
+  font-family: var(--f-mono, monospace);
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  border-radius: var(--ep-radius-pill);
+  background: color-mix(in srgb, var(--color-primary) 12%, white);
+  color: var(--color-primary);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 30%, white);
+}
+.ep-partner-link-row { display: flex; gap: 8px; align-items: stretch; }
+.ep-partner-link-row input {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--f-body);
+  font-size: 0.85rem;
+  padding: 10px 12px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--ep-radius);
+  background: #fafafa;
+  color: var(--text-base, #333);
+}
+.ep-partner-link-row button { white-space: nowrap; }
+.ep-org-form .ep-partner-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  width: 100%;
+  padding: 15px 17px;
+  margin: 0 0 16px;
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--color-secondary-1) 58%, white);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color var(--ep-transition), background var(--ep-transition), box-shadow var(--ep-transition);
+}
+.ep-org-form .ep-partner-checkbox:hover,
+.ep-org-form .ep-partner-checkbox:has(input:checked) {
+  border-color: color-mix(in srgb, var(--color-primary) 52%, var(--border-soft));
+  background: color-mix(in srgb, var(--color-primary) 5%, white);
+}
+.ep-org-form .ep-partner-checkbox:focus-within {
+  outline: 3px solid color-mix(in srgb, var(--color-primary) 22%, transparent);
+  outline-offset: 2px;
+}
+.ep-org-form .ep-partner-checkbox > input[type="checkbox"] {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  margin: 0;
+  padding: 0;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+.ep-partner-checkbox__copy { display: grid; gap: 3px; }
+.ep-partner-checkbox__copy strong { color: var(--color-accent); font-family: var(--f-accent); font-size: 0.9rem; }
+.ep-partner-checkbox__copy small { color: var(--text-muted); font-family: var(--f-body); font-size: 0.82rem; font-weight: 400; line-height: 1.45; }
+
+.ep-partner-howitworks {
+  margin: 0;
+  padding-left: 1.2em;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: var(--f-body);
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.ep-partner-howitworks li::marker { color: var(--color-primary); font-weight: 700; }
+
+/* ---- Tables ---- */
+/* Every data table on every organizer page (My/All Trips, Trip
+   Enquiries, Contact-Us Messages, Vendor Approvals, Partners, Trip
+   Approvals, By Vendor / All Sales, Earnings by Voyage, Payout
+   History…) is already marked up with this .ep-org-table-wrap div —
+   it's what makes the horizontal scroll below actually possible. */
+.ep-org-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table.ep-org-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+table.ep-org-table th {
+  text-align: left; font-family: var(--f-accent); font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; font-size: 0.74rem; letter-spacing: 0.04em;
+  padding: 10px 12px; border-bottom: 2px solid var(--border-soft); white-space: nowrap;
+}
+table.ep-org-table td { padding: 11px 12px; border-bottom: 1px solid var(--border-soft); vertical-align: top; }
+table.ep-org-table tr:last-child td { border-bottom: none; }
+.ep-org-empty-row td { text-align: center; color: var(--text-muted); padding: 26px 12px; }
+/* Headers above already force white-space:nowrap on <th>, but not on
+   <td> — so on a narrow screen every data cell was free to wrap, and
+   the browser happily crushed each column down to fit the viewport
+   instead of ever triggering .ep-org-table-wrap's overflow-x:auto (a
+   long trip title wrapped across 5-6 lines, ballooning the row
+   height, while wide tables like Trip Enquiries or Partners squeezed
+   8+ columns into a few px each). Forcing <td> to nowrap too means
+   the table can only get as narrow as its content truly needs, so
+   wide tables now overflow .ep-org-table-wrap and scroll sideways
+   instead — the normal, readable way to handle a data table on a
+   small screen, and it needs no guessed min-width since it reacts to
+   each table's own column count and content. */
+@media (max-width: 860px) {
+  table.ep-org-table td { white-space: nowrap; }
+}
+
+.ep-org-badge { display: inline-block; padding: 3px 10px; border-radius: var(--ep-radius-pill); font-size: 0.74rem; font-weight: 700; white-space: nowrap; }
+.ep-org-badge--draft, .ep-org-badge--pending_review, .ep-org-badge--pending { background: #FFF3CD; color: #8a6900; }
+.ep-org-badge--published, .ep-org-badge--approved, .ep-org-badge--confirmed, .ep-org-badge--active { background: color-mix(in srgb, var(--color-secondary-2) 45%, white); color: #2e5c13; }
+.ep-org-badge--rejected, .ep-org-badge--suspended, .ep-org-badge--cancelled { background: color-mix(in srgb, var(--color-primary) 18%, white); color: var(--color-primary); }
+.ep-org-badge--archived, .ep-org-badge--closed, .ep-org-badge--spam { background: #eee; color: #777; }
+.ep-org-badge--paused { background: #FFE0B2; color: #8a4b00; }
+.ep-org-badge--new, .ep-org-badge--in_progress, .ep-org-badge--responded, .ep-org-badge--refunded { background: #E3F2FD; color: #0d4a84; }
+/* Trip-enquiry states (on_hold/closed/resolved) and partner-credit states */
+.ep-org-badge--on_hold { background: #FFF3CD; color: #8a6900; }
+.ep-org-badge--resolved, .ep-org-badge--credited, .ep-org-badge--paid { background: color-mix(in srgb, var(--color-secondary-2) 45%, white); color: #2e5c13; }
+.ep-org-badge--awaiting_window { background: #FFE0B2; color: #8a4b00; }
+.ep-org-badge--not_applicable { background: #eee; color: #777; }
+
+.ep-org-row-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.ep-org-btn {
+  font-family: var(--f-accent); font-weight: 700; font-size: 0.78rem;
+  padding: 6px 13px; border-radius: var(--ep-radius-pill); border: 2px solid transparent;
+  cursor: pointer; background: var(--color-secondary-1); color: var(--color-accent);
+  transition: all var(--ep-transition);
+}
+.ep-org-btn:hover { filter: brightness(0.96); }
+.ep-org-btn--primary { background: var(--color-primary); color: #fff; }
+.ep-org-btn--accent { background: var(--color-secondary-2); color: var(--color-accent); }
+.ep-org-btn--ghost { background: transparent; border-color: var(--border-soft); }
+.ep-org-btn--danger { background: #fff; border-color: var(--color-primary); color: var(--color-primary); }
+.ep-org-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ---- Forms ---- */
+.ep-org-form .ep-field, .ep-org-form .ep-field-row { margin-bottom: 16px; }
+.ep-org-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+@media (max-width: 640px) { .ep-org-form-grid { grid-template-columns: 1fr; } }
+.ep-org-form label { display: block; font-family: var(--f-accent); font-weight: 600; font-size: 0.86rem; color: var(--color-accent); margin-bottom: 5px; }
+.ep-org-form input, .ep-org-form select, .ep-org-form textarea {
+  width: 100%; font-family: var(--f-body); font-size: 0.94rem; padding: 10px 13px;
+  border: 1.5px solid var(--border-soft); border-radius: 10px; background: var(--color-secondary-1);
+  transition: border-color var(--ep-transition);
+}
+.ep-org-form input:focus, .ep-org-form select:focus, .ep-org-form textarea:focus { outline: none; border-color: var(--color-primary); }
+.ep-org-form textarea { resize: vertical; min-height: 70px; }
+.ep-org-form fieldset { border: 1.5px dashed var(--border-soft); border-radius: var(--ep-radius); padding: 16px; margin: 0 0 18px; }
+.ep-org-form legend { font-family: var(--f-accent); font-weight: 700; font-size: 0.85rem; color: var(--color-primary); padding: 0 8px; }
+
+.ep-org-repeat-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 10px; }
+.ep-org-repeat-row > div { flex: 1; }
+.ep-org-repeat-remove { flex: 0 0 auto; }
+
+.ep-org-itinerary-day { border: 1px solid var(--border-soft); border-radius: 10px; padding: 14px; margin-bottom: 12px; background: var(--color-secondary-1); }
+.ep-org-itinerary-day__head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.ep-org-itinerary-day__head strong { font-family: var(--f-accent); color: var(--color-accent); }
+.ep-org-itinerary-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
+.ep-org-check-inline {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  min-width: 0;
+  min-height: 62px;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--border-soft);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.76);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color var(--ep-transition), background var(--ep-transition), box-shadow var(--ep-transition);
+}
+.ep-org-check-inline:hover,
+.ep-org-check-inline:has(input:checked) {
+  border-color: color-mix(in srgb, var(--color-primary) 48%, var(--border-soft));
+  background: color-mix(in srgb, var(--color-primary) 5%, white);
+}
+.ep-org-check-inline:focus-within {
+  outline: 3px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+  outline-offset: 2px;
+}
+.ep-org-check-inline > input[type="checkbox"] {
+  flex: 0 0 19px;
+  width: 19px;
+  height: 19px;
+  min-width: 19px;
+  margin: 2px 0 0;
+  padding: 0;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+.ep-org-check-inline__copy { display: grid; gap: 3px; }
+.ep-org-check-inline__copy strong { color: var(--color-accent); font-family: var(--f-accent); font-size: 0.86rem; }
+.ep-org-check-inline__copy small { color: var(--text-muted); font-family: var(--f-body); font-size: 0.78rem; font-weight: 400; line-height: 1.4; }
+@media (max-width: 640px) {
+  .ep-org-itinerary-options { grid-template-columns: 1fr; gap: 8px; }
+  .ep-org-form .ep-partner-checkbox { padding: 13px 14px; }
+}
+
+.ep-org-form-msg { font-size: 0.88rem; padding: 10px 14px; border-radius: 10px; margin-bottom: 16px; display: none; }
+.ep-org-form-msg.is-visible { display: block; }
+.ep-org-form-msg.is-success { background: color-mix(in srgb, var(--color-secondary-2) 30%, white); color: #2e5c13; }
+.ep-org-form-msg.is-error { background: color-mix(in srgb, var(--color-primary) 14%, white); color: var(--color-primary); }
+
+.ep-org-sub-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+.ep-org-sub-tab { font-family: var(--f-accent); font-weight: 700; font-size: 0.85rem; padding: 8px 16px; border-radius: var(--ep-radius-pill); border: 2px solid var(--border-soft); background: #fff; color: var(--text-muted); cursor: pointer; }
+.ep-org-sub-tab.is-active { border-color: var(--color-primary); background: var(--color-primary); color: #fff; }
+.ep-org-sub-panel { display: none; }
+.ep-org-sub-panel.is-active { display: block; }
