@@ -1,0 +1,389 @@
+/* ============================================================
+   home.css - index.html-only rules (hero, services strip,
+   destinations pick, clients). Loaded AFTER the shared stack:
+   bootstrap.min.css, style.css, responsive.css, header-footer.css.
+   Ported from the retired legacy home stylesheet; only rules
+   whose selectors still exist in index.html were kept.
+   Tokens (--f-*, --color-*, --text-*, --surface...) come from
+   style.css :root.
+   ============================================================ */
+
+/* Bootstrap 4 -> 5 parity: legacy page used 15px container padding, 30px grid
+   gutters and a 1140px max container (BS5 beta3 goes to 1320px at >=1400px) */
+.scheme-a-welcome-area .container, .scheme-a-catagory-area .container,
+.scheme-a-about-area .container, .scheme-a-editors-pick-area .container,
+.scheme-a-clients-area .container-fluid {
+    padding-right: 15px;
+    padding-left: 15px;
+}
+.scheme-a-welcome-area .row, .scheme-a-catagory-area .row, .scheme-a-about-area .row,
+.scheme-a-editors-pick-area .row, .scheme-a-clients-area .row { --bs-gutter-x: 30px; }
+@media (min-width: 1200px) {
+    .scheme-a-welcome-area .container, .scheme-a-catagory-area .container,
+    .scheme-a-about-area .container, .scheme-a-editors-pick-area .container {
+        max-width: 1140px;
+    }
+}
+
+/* Legacy base rules (were global in the legacy home stylesheet), scoped to home sections only */
+:where(.scheme-a-welcome-area, .scheme-a-catagory-area, .scheme-a-about-area,
+       .scheme-a-editors-pick-area, .scheme-a-clients-area) :where(*) { margin: 0; padding: 0; }
+.scheme-a-welcome-area :is(h1, h2, h3, h4, h5, h6), .scheme-a-catagory-area :is(h1, h2, h3, h4, h5, h6),
+.scheme-a-about-area :is(h1, h2, h3, h4, h5, h6), .scheme-a-editors-pick-area :is(h1, h2, h3, h4, h5, h6) {
+    margin-bottom: .5rem; /* BS4 reboot value; shared style.css zeroes headings */
+    font-family: var(--f-heading); font-weight: 700; color: var(--color-accent); line-height: 1.3;
+}
+/* BS4 fixed heading sizes (BS5 reboot makes them fluid below 1200px) */
+.scheme-a-welcome-area h1, .scheme-a-catagory-area h1, .scheme-a-about-area h1, .scheme-a-editors-pick-area h1 { font-size: 2.5rem; }
+.scheme-a-welcome-area h2, .scheme-a-catagory-area h2, .scheme-a-about-area h2, .scheme-a-editors-pick-area h2 { font-size: 2rem; }
+.scheme-a-welcome-area h3, .scheme-a-catagory-area h3, .scheme-a-about-area h3, .scheme-a-editors-pick-area h3 { font-size: 1.75rem; }
+.scheme-a-welcome-area h4, .scheme-a-catagory-area h4, .scheme-a-about-area h4, .scheme-a-editors-pick-area h4 { font-size: 1.5rem; }
+.scheme-a-welcome-area h5, .scheme-a-catagory-area h5, .scheme-a-about-area h5, .scheme-a-editors-pick-area h5 { font-size: 1.25rem; }
+.scheme-a-welcome-area h6, .scheme-a-catagory-area h6, .scheme-a-about-area h6, .scheme-a-editors-pick-area h6 { font-size: 1rem; }
+.scheme-a-welcome-area p, .scheme-a-about-area p, .scheme-a-editors-pick-area p {
+    color: var(--text-muted); font-size: 14px; line-height: 1.5; font-weight: 400;
+}
+.scheme-a-welcome-area a, .scheme-a-catagory-area a, .scheme-a-about-area a, .scheme-a-editors-pick-area a {
+    text-decoration: none; transition-duration: 500ms; font-weight: 600;
+}
+.scheme-a-welcome-area a:hover, .scheme-a-catagory-area a:hover,
+.scheme-a-about-area a:hover, .scheme-a-editors-pick-area a:hover { text-decoration: none; }
+.scheme-a-catagory-area img, .scheme-a-editors-pick-area img, .scheme-a-clients-area img { max-width: 100%; height: auto; }
+
+/* wow.js / animate.css subset actually used on this page */
+.wow { opacity: 0; }
+.animated { animation-duration: 1s; animation-fill-mode: both; opacity: 1; }
+@keyframes fadeInUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInUpBig { 0% { opacity: 0; transform: translateY(2000px); } 100% { opacity: 1; transform: translateY(0); } }
+.fadeInUp { animation-name: fadeInUp; }
+.fadeInUpBig { animation-name: fadeInUpBig; }
+
+@keyframes epsotload { 0% { transform: rotate(0); } 100% { transform: rotate(360deg); } }
+
+#preloader {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background-color: color-mix(in srgb, var(--color-primary) 80%, transparent);
+    height: 100vh;
+    width: 100%;
+    z-index: 99999;
+    opacity: 1;
+    transition: opacity 250ms ease;
+}
+
+#preloader.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.scheme-a-load {
+    width: 60px;
+    height: 60px;
+    background-color: transparent;
+    position: relative;
+    border-width: 5px;
+    border-style: solid;
+    border-color: color-mix(in srgb, var(--color-secondary-1) 10%, transparent) color-mix(in srgb, var(--color-secondary-1) 20%, transparent) color-mix(in srgb, var(--color-secondary-1) 95%, transparent);
+    z-index: 9;
+    top: auto;
+    margin: 0;
+    left: auto;
+    border-radius: 50%;
+    overflow: hidden;
+    -webkit-animation: 1000ms linear 0s normal none infinite running epsotload;
+    animation: 1000ms linear 0s normal none infinite running epsotload;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wow { opacity: 1; }
+    .animated { animation: none; }
+    #preloader { transition: none; }
+}
+
+.section-padding-100 {
+    padding-top: 100px;
+    padding-bottom: 100px;
+}
+
+.section-padding-0-100 {
+    padding-top: 0;
+    padding-bottom: 100px;
+}
+
+.section-heading {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 100px;
+}
+
+.section-heading span {
+    width: 30px;
+    height: 2px;
+    background-color: var(--color-secondary-1);
+    margin: 0 auto 15px;
+    display: block;
+}
+
+.section-heading h4 {
+    font-weight: 800;
+    line-height: 1;
+    color: var(--color-secondary-1);
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.section-heading p {
+    line-height: 1;
+    color: var(--color-secondary-1);
+    margin-bottom: 0;
+}
+
+.pic-bg {
+    background-position: center center;
+    background-size: cover;
+}
+
+.bg-overlay, .bg-overlay-9 {
+    position: relative;
+    z-index: 1;
+}
+
+.bg-overlay:after, .bg-overlay-9:after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
+    z-index: -1;
+}
+
+.bg-overlay-9:after {
+    background-color: color-mix(in srgb, var(--color-primary) 70%, transparent);
+}
+
+.scheme-a-welcome-area {
+    width: 100%;
+    height: 945px;
+    position: relative;
+    z-index: 1;
+}
+
+.hero-content h2 {
+    color: var(--color-secondary-1);
+    font-size: 72px;
+}
+
+.hero-content h4 {
+    color: var(--color-secondary-1);
+    margin-bottom: 0;
+    padding-left: 5px;
+}
+
+.hero-social-btn {
+    position: absolute;
+    width: auto;
+    height: auto;
+    bottom: 90px;
+    left: 60px;
+    z-index: 9;
+}
+
+.hero-social-btn .social-title {
+    -webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
+    margin-left: -145px;
+}
+
+.hero-social-btn .social-title h6 {
+    margin-bottom: 0;
+    color: var(--color-secondary-1);
+    line-height: 1;
+    margin-right: 30px;
+}
+
+.hero-social-btn .social-title span {
+    background-color: var(--color-secondary-1);
+    width: 80px;
+    height: 1px;
+    display: block;
+}
+
+.hero-social-btn .social-btns {
+    margin-top: 170px;
+}
+
+.hero-social-btn .social-btns > a {
+    font-size: 15px;
+    color: var(--color-secondary-1);
+    display: block;
+    margin-top: 30px;
+}
+
+.scheme-a-catagory-area {
+    position: relative;
+    z-index: 9;
+}
+
+.single-catagory-area {
+    background-color: var(--color-accent);
+    text-align: center;
+    padding: 60px 15px;
+    -webkit-transition-duration: 500ms;
+    transition-duration: 500ms;
+}
+
+.single-catagory-area:hover {
+    box-shadow: 5px 20px 30px var(--shadow-strong);
+}
+
+.all-catagories {
+    position: relative;
+    top: -50%;
+    z-index: 15;
+}
+
+.single-catagory-area .catagory-content img {
+    margin-bottom: 15px;
+}
+
+.single-catagory-area .catagory-content h6 {
+    margin-bottom: 0;
+    color: var(--color-secondary-1);
+}
+
+.about-content h2 {
+    font-size: 42px;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 60px;
+}
+
+.about-content span {
+    color: var(--color-accent);
+}
+
+.about-content p {
+    font-size: 18px;
+    line-height: 2;
+    margin-bottom: 0;
+}
+
+.scheme-a-editors-pick-area {
+    position: relative;
+    z-index: 1;
+}
+
+.editors-pick-info .places-total-destinations > a {
+    height: 70px;
+    display: inline-block;
+    line-height: 70px;
+    background-color: var(--color-accent);
+    padding: 0 50px;
+    font-size: 14px;
+    text-transform: uppercase;
+    font-weight: 800;
+    color: var(--color-secondary-1);
+}
+
+.editors-pick-info .places-total-destinations > a:last-child {
+    text-transform: capitalize;
+    font-weight: 400;
+    background-color: var(--color-accent);
+}
+
+.single-editors-pick-area {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 20px;
+}
+
+.editors-pick-info {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    z-index: 9;
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  .hero-content h2 {
+      font-size: 50px;
+  }
+  .hero-social-btn {
+      bottom: 130px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .hero-content h2 {
+      color: #fff;
+      font-size: 42px;
+  }
+  .hero-social-btn {
+      bottom: 140px;
+      left: 30px;
+      z-index: 0;
+  }
+  .single-catagory-area .catagory-content h6 {
+      font-size: 13px;
+  }
+  .about-content h2 {
+      font-size: 36px;
+  }
+  .single-catagory-area {
+      padding: 40px 15px;
+  }
+  .clients-logo img {
+      padding: 0 15px;
+  }
+}
+
+@media (min-width: 320px) and (max-width: 767px) {
+  .hero-content h2 {
+      color: #fff;
+      font-size: 24px;
+  }
+  .hero-social-btn {
+      display: none;
+  }
+  .all-catagories {
+      top: 0;
+      padding: 30px 0;
+  }
+  .hero-content h4 {
+      padding-left: 0;
+      font-size: 16px;
+  }
+  .single-catagory-area {
+      margin-bottom: 30px;
+  }
+  .about-content h2 {
+      font-size: 30px;
+      margin-bottom: 30px;
+  }
+  .editors-pick-info .places-total-destinations > a {
+      height: 50px;
+      line-height: 50px;
+      padding: 0 15px;
+  }
+  .editors-pick-info {
+      top: 15px;
+      left: 15px;
+  }
+  .single-catagory-area {
+      padding: 40px 15px;
+  }
+  .clients-logo > img {
+      padding: 30px;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 767px) {
+  .hero-content h2 {
+      font-size: 36px;
+  }
+}

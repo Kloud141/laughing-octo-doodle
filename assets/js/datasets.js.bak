@@ -1,0 +1,761 @@
+/**
+ * datasets.js
+ * ------------------------------------------------------------------
+ * Single source of truth for destinations and the vendor trips
+ * (tours) offered at each one. Used by:
+ *   - destinations/destination-list.html  (grid of destinations)
+ *   - destinations/destination-tours.html (tours for ?destination=<slug>)
+ *   - destinations/tour-details.html      (one tour, via ?article=<articleId>)
+ *
+ * Add a destination or a tour here and both pages pick it up.
+ * Prices are per person, in INR. Tour images fall back to the
+ * destination image unless a tour sets its own `image`.
+ *
+ * Every tour carries two generated identifiers:
+ *   - articleId: 12 chars from [a-z0-9], written as two hyphen-separated
+ *     groups of 5-7 chars each (e.g. "hbrpoig-8f1cb"). This is the id
+ *     tour-details.html looks up via its `?article=` query param, and
+ *     what destination-tours.html's "Show Details" links point at.
+ *   - voyageId: a 6-char [a-z0-9] booking reference, unique per tour,
+ *     sent along with the "Enquire about this trip" form on
+ *     tour-details.html so an enquiry can be matched back to the tour.
+ * Both are unique across the whole dataset (see the generator this was
+ * built with, kept for reference below).
+ * ------------------------------------------------------------------
+ */
+var DESTINATIONS_DATA = [
+  {
+    "slug": "bali",
+    "name": "Bali, Indonesia",
+    "region": "International",
+    "image": "https://images.unsplash.com/photo-1537996194471-e657df975ab4?fm=jpg&q=80&w=900&auto=format&fit=crop",
+    "blurb": "Rice terraces, sea temples, and a coastline built for slow mornings.",
+    "tours": [
+      {
+        "title": "Ubud Rice Terraces & Temples",
+        "days": 5,
+        "nights": 4,
+        "category": "Cultural",
+        "price": 42500,
+        "articleId": "hbrpoig-8f1cb",
+        "voyageId": "fno6b9"
+      },
+      {
+        "title": "Nusa Penida Island Escape",
+        "days": 4,
+        "nights": 3,
+        "category": "Adventure",
+        "price": 38900,
+        "articleId": "80o2r-ak1vrjn",
+        "voyageId": "vgfygw"
+      },
+      {
+        "title": "Bali Honeymoon Retreat",
+        "days": 6,
+        "nights": 5,
+        "category": "Couple",
+        "price": 64900,
+        "articleId": "qc38hy-f9sxme",
+        "voyageId": "cosfog"
+      }
+    ]
+  },
+  {
+    "slug": "santorini",
+    "name": "Santorini, Greece",
+    "region": "International",
+    "image": "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?fm=jpg&q=80&w=900&auto=format&fit=crop",
+    "blurb": "Whitewashed clifftop villages over the Aegean, best seen at sunset.",
+    "tours": [
+      {
+        "title": "Oia Sunset & Caldera Cruise",
+        "days": 5,
+        "nights": 4,
+        "category": "Couple",
+        "price": 78000,
+        "articleId": "r3xkxw-nrek8p",
+        "voyageId": "k3yr9o"
+      },
+      {
+        "title": "Aegean Island Hopper",
+        "days": 7,
+        "nights": 6,
+        "category": "Group",
+        "price": 96500,
+        "articleId": "udocuzr-enun5",
+        "voyageId": "z3jqip"
+      }
+    ]
+  },
+  {
+    "slug": "kyoto",
+    "name": "Kyoto, Japan",
+    "region": "International",
+    "image": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?fm=jpg&q=80&w=900&auto=format&fit=crop",
+    "blurb": "A thousand years of temples, gardens, and quiet wooden streets.",
+    "tours": [
+      {
+        "title": "Kyoto Temples & Tea Trail",
+        "days": 6,
+        "nights": 5,
+        "category": "Cultural",
+        "price": 88000,
+        "articleId": "98q1zxo-i65fd",
+        "voyageId": "hjk1ey"
+      },
+      {
+        "title": "Fushimi Inari to Arashiyama",
+        "days": 4,
+        "nights": 3,
+        "category": "Cultural",
+        "price": 59500,
+        "articleId": "37q9ah-8rvhs1",
+        "voyageId": "k3aq6l"
+      },
+      {
+        "title": "Kyoto Cherry Blossom Special",
+        "days": 7,
+        "nights": 6,
+        "category": "Group",
+        "price": 104000,
+        "articleId": "gt6mjxk-87au5",
+        "voyageId": "bhxtpd"
+      }
+    ]
+  },
+  {
+    "slug": "kerala-backwaters",
+    "name": "Kerala Backwaters",
+    "region": "Indian",
+    "image": "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?fm=jpg&q=80&w=900&auto=format&fit=crop",
+    "blurb": "Houseboats drifting through palm-lined canals at their own pace.",
+    "tours": [
+      {
+        "title": "Alleppey Houseboat Getaway",
+        "days": 3,
+        "nights": 2,
+        "category": "Couple",
+        "price": 18500,
+        "articleId": "ff5e8-ii49kq7",
+        "voyageId": "1n8mtz"
+      },
+      {
+        "title": "Kumarakom to Munnar Loop",
+        "days": 5,
+        "nights": 4,
+        "category": "Village",
+        "price": 27500,
+        "articleId": "x272hpo-evb9o",
+        "voyageId": "oaedoe"
+      },
+      {
+        "title": "Kerala Backwaters Family Tour",
+        "days": 6,
+        "nights": 5,
+        "category": "Group",
+        "price": 34900,
+        "articleId": "ve6pr-5n8i4p4",
+        "voyageId": "0mgg1w"
+      }
+    ]
+  },
+  {
+    "slug": "ladakh",
+    "name": "Ladakh",
+    "region": "Indian",
+    "image": "https://images.unsplash.com/photo-1589308078059-be1415eab4c3?fm=jpg&q=80&w=900&auto=format&fit=crop",
+    "blurb": "High-altitude desert, monasteries, and some of the world's highest roads.",
+    "tours": [
+      {
+        "title": "Leh Monasteries & Pangong Lake",
+        "days": 7,
+        "nights": 6,
+        "category": "Adventure",
+        "price": 39500,
+        "articleId": "03dgdz-vgpmm8",
+        "voyageId": "2i1lr3"
+      },
+      {
+        "title": "Nubra Valley Road Trip",
+        "days": 8,
+        "nights": 7,
+        "category": "Adventure",
+        "price": 46800,
+        "articleId": "e29gd-8afpk05",
+        "voyageId": "4nzdky"
+      },
+      {
+        "title": "Ladakh Group Departure",
+        "days": 9,
+        "nights": 8,
+        "category": "Group",
+        "price": 52000,
+        "articleId": "yq3s1-95jmsnd",
+        "voyageId": "8dudd4"
+      }
+    ]
+  },
+  {
+    "slug": "rajasthan-forts",
+    "name": "Rajasthan Forts",
+    "region": "Indian",
+    "image": "https://images.unsplash.com/photo-1477587458883-47145ed94245?fm=jpg&q=80&w=900&auto=format&fit=crop",
+    "blurb": "Sandstone forts and painted havelis across the desert state.",
+    "tours": [
+      {
+        "title": "Jaipur–Jodhpur–Udaipur Circuit",
+        "days": 8,
+        "nights": 7,
+        "category": "Cultural",
+        "price": 41500,
+        "articleId": "7kd6fle-epzhp",
+        "voyageId": "cf07uq"
+      },
+      {
+        "title": "Jaisalmer Desert Camp",
+        "days": 4,
+        "nights": 3,
+        "category": "Adventure",
+        "price": 21900,
+        "articleId": "upqzi-t3uea3g",
+        "voyageId": "e8n6qi"
+      }
+    ]
+  },
+  {
+    "slug": "varanasi",
+    "name": "Varanasi",
+    "region": "Spiritual",
+    "image": "https://images.unsplash.com/photo-1561361058-c24cecae35ca?fm=jpg&q=80&w=900&auto=format&fit=crop",
+    "blurb": "Ghats along the Ganges, at their most striking at dawn.",
+    "tours": [
+      {
+        "title": "Varanasi Ganga Aarti Weekender",
+        "days": 3,
+        "nights": 2,
+        "category": "Spiritual",
+        "price": 12900,
+        "articleId": "epxsk2-8t7a9t",
+        "voyageId": "giqhg9"
+      },
+      {
+        "title": "Kashi & Sarnath Heritage Walk",
+        "days": 4,
+        "nights": 3,
+        "category": "Cultural",
+        "price": 17500,
+        "articleId": "rsnvn-q65qdf1",
+        "voyageId": "rcaviq"
+      }
+    ]
+  },
+  {
+    "slug": "rishikesh",
+    "name": "Rishikesh",
+    "region": "Spiritual",
+    "image": "https://images.unsplash.com/photo-1591018534326-fbc7c1a5b1c4?fm=jpg&q=80&w=900&auto=format&fit=crop",
+    "blurb": "Yoga, the Ganges, and the foothills of the Himalayas.",
+    "tours": [
+      {
+        "title": "Rishikesh Yoga Retreat",
+        "days": 5,
+        "nights": 4,
+        "category": "Spiritual",
+        "price": 19900,
+        "articleId": "2919a-hej8cx9",
+        "voyageId": "j1ictx"
+      },
+      {
+        "title": "Ganges Rafting & Camping",
+        "days": 3,
+        "nights": 2,
+        "category": "Adventure",
+        "price": 11500,
+        "articleId": "wnpgw-90jpkl0",
+        "voyageId": "blv0pr"
+      },
+      {
+        "title": "Haridwar–Rishikesh Pilgrim Trail",
+        "days": 4,
+        "nights": 3,
+        "category": "Group",
+        "price": 15800,
+        "articleId": "gyc4o-m3wtoob",
+        "voyageId": "mzvrer"
+      }
+    ]
+  },
+  {
+    "slug": "bodh-gaya",
+    "name": "Bodh Gaya",
+    "region": "Spiritual",
+    "image": "https://images.unsplash.com/photo-1609619385076-36933bfa5686?fm=jpg&q=80&w=900&auto=format&fit=crop",
+    "blurb": "Where the Buddha attained enlightenment, still a place of quiet pilgrimage.",
+    "tours": [
+      {
+        "title": "Bodh Gaya Buddhist Circuit",
+        "days": 5,
+        "nights": 4,
+        "category": "Spiritual",
+        "price": 23500,
+        "articleId": "6z8vbh-qlqcg1",
+        "voyageId": "wu16hy"
+      },
+      {
+        "title": "Bodh Gaya Meditation Stay",
+        "days": 3,
+        "nights": 2,
+        "category": "Spiritual",
+        "price": 14500,
+        "articleId": "mqc1a78-mx1ev",
+        "voyageId": "uht6t0"
+      }
+    ]
+  },
+  {
+    "slug": "dubai",
+    "name": "Dubai, UAE",
+    "region": "International",
+    "image": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?fm=jpg&q=80&w=900&auto=format&fit=crop",
+    "blurb": "Skyline views, desert dunes and souks, all in one easy stopover.",
+    "tours": [
+      {
+        "title": "Dubai City & Burj Khalifa",
+        "days": 5,
+        "nights": 4,
+        "category": "Group",
+        "price": 64500,
+        "articleId": "zs9im0-yltz9a",
+        "voyageId": "tsn1u3"
+      },
+      {
+        "title": "Desert Safari & Abu Dhabi Combo",
+        "days": 6,
+        "nights": 5,
+        "category": "Adventure",
+        "price": 78900,
+        "articleId": "2n64kf-s6vfpt",
+        "voyageId": "omjbcp"
+      },
+      {
+        "title": "Dubai Family Fun Escape",
+        "days": 5,
+        "nights": 4,
+        "category": "Couple",
+        "price": 69900,
+        "articleId": "e30my5-zpjag1",
+        "voyageId": "ol73d9"
+      }
+    ]
+  },
+  {
+    "slug": "maldives",
+    "name": "Maldives",
+    "region": "International",
+    "image": "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?fm=jpg&q=80&w=900&auto=format&fit=crop",
+    "blurb": "Overwater villas and turquoise lagoons made for slow, quiet days.",
+    "tours": [
+      {
+        "title": "Maldives Honeymoon Villa Stay",
+        "days": 5,
+        "nights": 4,
+        "category": "Couple",
+        "price": 118000,
+        "articleId": "h3i37-9u26192",
+        "voyageId": "k42qpr"
+      },
+      {
+        "title": "Island Hopping & Snorkelling",
+        "days": 6,
+        "nights": 5,
+        "category": "Adventure",
+        "price": 96500,
+        "articleId": "5pr2esp-rvu8f",
+        "voyageId": "ijoyjn"
+      }
+    ]
+  },
+  {
+    "slug": "paris",
+    "name": "Paris, France",
+    "region": "International",
+    "image": "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?fm=jpg&q=80&w=900&auto=format&fit=crop",
+    "blurb": "Cafés, museums and the Eiffel Tower, in the city that never rushes.",
+    "tours": [
+      {
+        "title": "Paris Classics & Seine Cruise",
+        "days": 6,
+        "nights": 5,
+        "category": "Group",
+        "price": 142000,
+        "articleId": "00v83-0dn0yby",
+        "voyageId": "4awty0"
+      },
+      {
+        "title": "Paris & Versailles Romance",
+        "days": 5,
+        "nights": 4,
+        "category": "Couple",
+        "price": 128500,
+        "articleId": "8o5or15-byvzk",
+        "voyageId": "3i8bzb"
+      },
+      {
+        "title": "Paris to Swiss Alps Combo",
+        "days": 9,
+        "nights": 8,
+        "category": "Group",
+        "price": 205000,
+        "articleId": "1i3ld-qyun3uv",
+        "voyageId": "yr0qf4"
+      }
+    ]
+  },
+  {
+    "slug": "singapore",
+    "name": "Singapore",
+    "region": "International",
+    "image": "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?fm=jpg&q=80&w=900&auto=format&fit=crop",
+    "blurb": "Gardens, hawker food and a skyline that glows after dark.",
+    "tours": [
+      {
+        "title": "Singapore City Highlights",
+        "days": 4,
+        "nights": 3,
+        "category": "Group",
+        "price": 72500,
+        "articleId": "8dwoe-cbpmbjp",
+        "voyageId": "i4hn3q"
+      },
+      {
+        "title": "Singapore & Sentosa Family Trip",
+        "days": 5,
+        "nights": 4,
+        "category": "Couple",
+        "price": 84900,
+        "articleId": "khktgb-tyzmep",
+        "voyageId": "gthcw8"
+      },
+      {
+        "title": "Singapore–Malaysia Twin City",
+        "days": 7,
+        "nights": 6,
+        "category": "Group",
+        "price": 98000,
+        "articleId": "xe6va0-5g1x3j",
+        "voyageId": "1l7r84"
+      }
+    ]
+  },
+  {
+    "slug": "amritsar",
+    "name": "Amritsar",
+    "region": "Spiritual",
+    "image": "https://images.unsplash.com/photo-1514222134-b57cbb8ce073?fm=jpg&q=80&w=900&auto=format&fit=crop",
+    "blurb": "The Golden Temple, langar for thousands, and the Wagah border at dusk.",
+    "tours": [
+      {
+        "title": "Golden Temple & Wagah Weekender",
+        "days": 3,
+        "nights": 2,
+        "category": "Spiritual",
+        "price": 11900,
+        "articleId": "1rupfr-2p3yvb",
+        "voyageId": "5ul5nw"
+      },
+      {
+        "title": "Amritsar Heritage & Food Trail",
+        "days": 4,
+        "nights": 3,
+        "category": "Cultural",
+        "price": 15500,
+        "articleId": "vrr9a7-mfp059",
+        "voyageId": "p452bf"
+      }
+    ]
+  },
+  {
+    "slug": "tirupati",
+    "name": "Tirupati",
+    "region": "Spiritual",
+    "image": "https://images.unsplash.com/photo-1621427642019-cb1e8e0b6e3a?fm=jpg&q=80&w=900&auto=format&fit=crop",
+    "blurb": "Pilgrimage to the Venkateswara temple in the Tirumala hills.",
+    "tours": [
+      {
+        "title": "Tirupati Darshan Express",
+        "days": 2,
+        "nights": 1,
+        "category": "Spiritual",
+        "price": 8900,
+        "articleId": "ozptx4-97w19v",
+        "voyageId": "w3rtqo"
+      },
+      {
+        "title": "Tirupati–Kanchipuram–Chennai Pilgrim Circuit",
+        "days": 5,
+        "nights": 4,
+        "category": "Group",
+        "price": 21500,
+        "articleId": "muh8l-mn4r7sg",
+        "voyageId": "msoxlt"
+      }
+    ]
+  },
+  {
+    "slug": "haridwar",
+    "name": "Haridwar",
+    "region": "Spiritual",
+    "image": "https://images.unsplash.com/photo-1587474260584-136574528ed5?fm=jpg&q=80&w=900&auto=format&fit=crop",
+    "blurb": "Evening Ganga Aarti at Har Ki Pauri, where the river leaves the hills.",
+    "tours": [
+      {
+        "title": "Haridwar Ganga Aarti Getaway",
+        "days": 3,
+        "nights": 2,
+        "category": "Spiritual",
+        "price": 10500,
+        "articleId": "8ircd-9si5gas",
+        "voyageId": "442vld"
+      },
+      {
+        "title": "Char Dham Gateway Tour",
+        "days": 6,
+        "nights": 5,
+        "category": "Group",
+        "price": 26800,
+        "articleId": "4hez5e-djjtfp",
+        "voyageId": "h90o7y"
+      },
+      {
+        "title": "Haridwar–Rishikesh–Mussoorie",
+        "days": 5,
+        "nights": 4,
+        "category": "Couple",
+        "price": 19900,
+        "articleId": "2t1tdg-nnqfkp",
+        "voyageId": "l9eka0"
+      }
+    ]
+  },
+  {
+    "slug": "pushkar",
+    "name": "Pushkar",
+    "region": "Spiritual",
+    "image": "https://images.unsplash.com/photo-1599661046289-e31897846e41?fm=jpg&q=80&w=900&auto=format&fit=crop",
+    "blurb": "A sacred lake town ringed by temples, ghats and desert fairs.",
+    "tours": [
+      {
+        "title": "Pushkar Lake & Brahma Temple Stay",
+        "days": 3,
+        "nights": 2,
+        "category": "Spiritual",
+        "price": 12200,
+        "articleId": "4scoss-3eoqm1",
+        "voyageId": "h8ojrj"
+      },
+      {
+        "title": "Pushkar Camel Fair Special",
+        "days": 4,
+        "nights": 3,
+        "category": "Cultural",
+        "price": 17800,
+        "articleId": "dkts2-h3tzr68",
+        "voyageId": "52fc1u"
+      }
+    ]
+  },
+  {
+    "slug": "goa",
+    "name": "Goa",
+    "region": "Indian",
+    "image": "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?fm=jpg&q=80&w=900&auto=format&fit=crop",
+    "blurb": "Beaches, Portuguese lanes and slow susegad evenings.",
+    "tours": [
+      {
+        "title": "North Goa Beach Break",
+        "days": 4,
+        "nights": 3,
+        "category": "Couple",
+        "price": 16900,
+        "articleId": "qbfobrc-l472r",
+        "voyageId": "l15f4w"
+      },
+      {
+        "title": "Old Goa Heritage & Spice Trail",
+        "days": 3,
+        "nights": 2,
+        "category": "Cultural",
+        "price": 13500,
+        "articleId": "vugkv0-5sz9c3",
+        "voyageId": "fuquhz"
+      },
+      {
+        "title": "Goa Group Getaway",
+        "days": 5,
+        "nights": 4,
+        "category": "Group",
+        "price": 19800,
+        "articleId": "a830dm7-x52dn",
+        "voyageId": "r9is25"
+      }
+    ]
+  },
+  {
+    "slug": "munnar",
+    "name": "Munnar",
+    "region": "Indian",
+    "image": "https://images.unsplash.com/photo-1593693397690-362cb9666fc2?fm=jpg&q=80&w=900&auto=format&fit=crop",
+    "blurb": "Rolling tea estates and misty hills in the Western Ghats.",
+    "tours": [
+      {
+        "title": "Munnar Tea Hills Retreat",
+        "days": 3,
+        "nights": 2,
+        "category": "Couple",
+        "price": 13900,
+        "articleId": "bpkt9-a90foh3",
+        "voyageId": "hj5s6r"
+      },
+      {
+        "title": "Munnar & Thekkady Wildlife",
+        "days": 5,
+        "nights": 4,
+        "category": "Village",
+        "price": 22500,
+        "articleId": "44p39j-ym6ier",
+        "voyageId": "0v6ras"
+      }
+    ]
+  },
+  {
+    "slug": "andaman",
+    "name": "Andaman Islands",
+    "region": "Indian",
+    "image": "https://images.unsplash.com/photo-1589197331516-4d84b72ebde3?fm=jpg&q=80&w=900&auto=format&fit=crop",
+    "blurb": "White-sand beaches, coral reefs and clear water for diving.",
+    "tours": [
+      {
+        "title": "Havelock & Neil Island Escape",
+        "days": 5,
+        "nights": 4,
+        "category": "Couple",
+        "price": 38500,
+        "articleId": "t5j284w-v98y3",
+        "voyageId": "umpyo0"
+      },
+      {
+        "title": "Andaman Scuba & Snorkel Adventure",
+        "days": 6,
+        "nights": 5,
+        "category": "Adventure",
+        "price": 44900,
+        "articleId": "u4yyj-5ci6vg2",
+        "voyageId": "g73aj0"
+      },
+      {
+        "title": "Port Blair Heritage & Beaches",
+        "days": 4,
+        "nights": 3,
+        "category": "Group",
+        "price": 29800,
+        "articleId": "je4qvzf-v8yu5",
+        "voyageId": "8cepso"
+      }
+    ]
+  },
+  {
+    "slug": "shimla-manali",
+    "name": "Shimla & Manali",
+    "region": "Indian",
+    "image": "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?fm=jpg&q=80&w=900&auto=format&fit=crop",
+    "blurb": "Colonial hill stations and snow passes in the Himachal Himalayas.",
+    "tours": [
+      {
+        "title": "Shimla–Manali Classic",
+        "days": 6,
+        "nights": 5,
+        "category": "Group",
+        "price": 24500,
+        "articleId": "f1gg2kt-bcuds",
+        "voyageId": "wx1jp7"
+      },
+      {
+        "title": "Manali Snow & Adventure Break",
+        "days": 4,
+        "nights": 3,
+        "category": "Adventure",
+        "price": 17900,
+        "articleId": "lklfyp-5jo3q3",
+        "voyageId": "qa3s8k"
+      },
+      {
+        "title": "Himachal Honeymoon Special",
+        "days": 7,
+        "nights": 6,
+        "category": "Couple",
+        "price": 31500,
+        "articleId": "2wt1q-3tmy4gp",
+        "voyageId": "ywssbz"
+      }
+    ]
+  },
+  {
+    "slug": "darjeeling",
+    "name": "Darjeeling",
+    "region": "Indian",
+    "image": "https://images.unsplash.com/photo-1544634076-a90160ddf44d?fm=jpg&q=80&w=900&auto=format&fit=crop",
+    "blurb": "Toy train rides, tea gardens and sunrise over Kanchenjunga.",
+    "tours": [
+      {
+        "title": "Darjeeling Tea & Toy Train",
+        "days": 4,
+        "nights": 3,
+        "category": "Cultural",
+        "price": 18500,
+        "articleId": "ad5sow-omqigc",
+        "voyageId": "t2cxif"
+      },
+      {
+        "title": "Darjeeling–Gangtok Hills Circuit",
+        "days": 6,
+        "nights": 5,
+        "category": "Group",
+        "price": 27800,
+        "articleId": "u0lmi8-x76rkq",
+        "voyageId": "4svh3e"
+      }
+    ]
+  },
+  {
+    "slug": "hampi",
+    "name": "Hampi",
+    "region": "Indian",
+    "image": "https://images.unsplash.com/photo-1620766165457-a8025baa82e0?fm=jpg&q=80&w=900&auto=format&fit=crop",
+    "blurb": "Boulder-strewn ruins of the Vijayanagara empire along the Tungabhadra.",
+    "tours": [
+      {
+        "title": "Hampi Ruins & Sunrise Trail",
+        "days": 3,
+        "nights": 2,
+        "category": "Cultural",
+        "price": 12800,
+        "articleId": "oz9xf-zaq8h3x",
+        "voyageId": "qyxgo4"
+      },
+      {
+        "title": "Hampi–Badami–Aihole Heritage",
+        "days": 5,
+        "nights": 4,
+        "category": "Group",
+        "price": 21900,
+        "articleId": "9uoe3-t0hicct",
+        "voyageId": "5hgp8i"
+      }
+    ]
+  }
+];
+
+var DESTINATIONS_BY_SLUG = {};
+for (var i = 0; i < DESTINATIONS_DATA.length; i++) {
+  DESTINATIONS_BY_SLUG[DESTINATIONS_DATA[i].slug] = DESTINATIONS_DATA[i];
+}

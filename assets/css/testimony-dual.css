@@ -1,0 +1,144 @@
+/* Embark Pedia :: dual testimonial carousel ("ep-td").
+   Two traveller-story cards shown at a time over a photographic,
+   overlay-darkened background (same pic-bg/bg-overlay-9 treatment as
+   the "Destinations you must Visit" section), with pagination dots. */
+.ep-td-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.ep-td {
+  position: relative;
+  max-width: 1120px;
+  margin: 0 auto;
+  outline: none;
+}
+
+.ep-td__track {
+  position: relative;
+}
+
+.ep-td__page {
+  display: none;
+  gap: 32px;
+}
+
+.ep-td__page.is-active {
+  display: flex;
+}
+
+.ep-td__card {
+  flex: 1 1 50%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: var(--color-secondary-1, #FDF6F0);
+  border-radius: 18px;
+  padding: 56px 28px 32px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+}
+
+.ep-td__avatar {
+  width: 86px;
+  height: 86px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: -84px auto 20px;
+  border: 4px solid var(--color-secondary-1, #FDF6F0);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+  background: var(--color-accent, #4A2C3A);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.ep-td__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ep-td__avatar.no-img::after {
+  content: "\201C";
+  font-family: var(--f-heading, serif);
+  font-size: 2.6rem;
+  line-height: 1;
+  color: var(--color-secondary-2, #9CCC65);
+}
+
+.ep-td__quote {
+  font-family: var(--f-body, serif);
+  font-style: italic;
+  color: var(--text-primary, #4A2C3A);
+  line-height: 1.7;
+  margin-bottom: 18px;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ep-td__name {
+  font-family: var(--f-accent, serif);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent, #4A2C3A);
+  margin-bottom: 4px;
+  font-size: 0.95rem;
+}
+
+.ep-td__meta {
+  font-size: 0.85rem;
+  color: var(--text-muted, #4A2C3A);
+  opacity: 0.8;
+}
+
+.ep-td__dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 36px;
+}
+
+.ep-td__dot {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(253, 246, 240, 0.4);
+  cursor: pointer;
+  transition: transform 200ms ease, background 200ms ease;
+}
+
+.ep-td__dot:hover {
+  background: rgba(253, 246, 240, 0.7);
+}
+
+.ep-td__dot.is-on {
+  background: var(--color-secondary-1, #FDF6F0);
+  transform: scale(1.35);
+}
+
+.ep-td__dot:focus-visible {
+  outline: 2px solid var(--color-secondary-2, #9CCC65);
+  outline-offset: 2px;
+}
+
+@media (max-width: 767px) {
+  .ep-td__page.is-active {
+    flex-direction: column;
+  }
+  .ep-td__card {
+    padding-top: 50px;
+  }
+  .ep-td__avatar {
+    margin-top: -78px;
+  }
+}

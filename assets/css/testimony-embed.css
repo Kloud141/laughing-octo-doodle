@@ -1,0 +1,30 @@
+/* Testimony grid styles — extracted from Embark Pedia's style.css,
+   scoped under .embark-testimony so they cannot leak into the rest of the page. */
+.embark-testimony .section-padding-100-50 {
+    padding-top: 100px;
+    padding-bottom: 50px;
+}
+.embark-testimony .section-heading {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 60px;
+}
+.embark-testimony .section-heading span {
+    width: 30px;
+    height: 2px;
+    background-color: #6F6F6F;
+    margin: 0 auto 15px;
+    display: block;
+}
+.embark-testimony .section-heading h4 {
+    font-weight: 800;
+    line-height: 1;
+    color: #2A2A2A;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+.embark-testimony .section-heading p {
+    line-height: 1;
+    color: #848484;
+    margin-bottom: 0;
+}

@@ -1,0 +1,281 @@
+/* ============================================================
+   tour-details.css
+   Styles for destinations/tour-details.html (rendered dynamically
+   by assets/js/tour-render.js from ?article=<articleId>).
+   Uses the shared design tokens from header-footer.css:
+     --color-primary   (A, 35%) -> "colour 1" - special/highlight day
+     --color-secondary-1 (B, 25%)
+     --color-secondary-2 (C, 20%) -> "colour 3" - day notes (green)
+     --color-accent   (D, 20%) -> "colour 4" - regular day
+   ============================================================ */
+
+.ep-tour-status { max-width: 640px; margin: 120px auto; padding: 0 20px; text-align: center; font-family: var(--f-body); color: var(--text-muted); }
+.ep-tour-status a { color: var(--color-primary); font-weight: 700; }
+
+/* ---------- hero (same markup/classes as roams/roam-list/roam.html) ---------- */
+.hero { position: relative; min-height: 70vh; display: flex; align-items: flex-end; overflow: hidden; }
+.hero__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.08); }
+.hero__scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(74,44,58,.15) 0%, rgba(74,44,58,.35) 55%, rgba(74,44,58,.92) 100%); }
+.hero__content { position: relative; z-index: 2; width: 100%; padding: 0 1.75rem 4rem; max-width: 74rem; margin: 0 auto; color: var(--color-secondary-1); }
+.hero__by {
+  font-family: var(--f-accent); font-weight: 800; font-size: 1rem;
+  background: var(--color-primary); color: var(--color-secondary-1);
+  display: inline-block; padding: .4rem 1.1rem; border-radius: 2rem; transform: rotate(-3deg); margin-bottom: 1.6rem;
+}
+.hero__title { font-family: var(--f-heading); font-size: clamp(2.2rem, 7vw, 4.5rem); color: var(--color-secondary-1); text-transform: uppercase; letter-spacing: .02em; text-shadow: 0 .5rem 2rem rgba(0,0,0,.35); }
+.hero__sub { font-family: var(--f-body); font-weight: 700; font-size: 1.1rem; color: var(--color-secondary-1); margin-top: 1.1rem; max-width: 38rem; }
+.hero__meta { display: flex; flex-wrap: wrap; gap: .65rem; margin-top: 1.75rem; }
+.hero__chip {
+  font-size: .92rem; font-weight: 700; background: rgba(253,246,240,.14); border: 1.5px solid rgba(253,246,240,.6);
+  color: var(--color-secondary-1); padding: .5rem 1.1rem; border-radius: 2rem; backdrop-filter: blur(3px);
+}
+.hero__chip strong { color: var(--color-secondary-2); }
+
+/* ---------- section head ---------- */
+.ep-tour-section { padding-block: 60px 90px; background: var(--color-secondary-1); }
+.ep-tour-section__head { margin-bottom: 28px; }
+.ep-tour-section__head h2 { font-family: var(--f-heading); color: var(--color-accent); font-size: 1.9rem; margin-bottom: 8px; }
+.ep-tour-section__head p { font-family: var(--f-body); color: var(--text-muted); }
+
+/* ---------- plan accordion ---------- */
+.ep-plan { display: flex; flex-direction: column; gap: 16px; }
+
+.ep-plan-day {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px var(--shadow-soft);
+  overflow: hidden;
+}
+.ep-plan-day__summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  font-family: var(--f-accent);
+}
+.ep-plan-day__summary::-webkit-details-marker { display: none; }
+
+.ep-plan-day__ball {
+  flex: none;
+  width: 3.6rem; height: 3.6rem;
+  border-radius: 50%;
+  background: var(--color-accent); /* colour 4 - regular day */
+  color: #fff;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 1.1rem; line-height: 1;
+}
+.ep-plan-day__ball span { font-size: .56rem; font-family: var(--f-body); font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 2px; }
+.ep-plan-day.is-special .ep-plan-day__ball { background: var(--color-primary); } /* colour 1 - special/highlight day */
+
+.ep-plan-day__title { flex: 1 1 auto; font-weight: 700; font-size: 1.05rem; color: var(--color-accent); }
+.ep-plan-day__chevron { flex: none; width: 1.2rem; color: var(--color-accent); transition: transform .2s ease; }
+.ep-plan-day__chevron svg { width: 100%; height: auto; }
+.ep-plan-day[open] .ep-plan-day__chevron { transform: rotate(180deg); }
+
+.ep-plan-day__body { padding: 0 20px 20px 92px; }
+.ep-plan-day__list { list-style: none; display: grid; gap: 8px; }
+.ep-plan-day__list li { position: relative; padding-left: 18px; font-size: .95rem; color: var(--text-muted); }
+.ep-plan-day__list li::before { content: ''; position: absolute; left: 0; top: .5rem; width: .4rem; height: .4rem; border-radius: 50%; background: var(--color-primary); }
+
+.ep-plan-day__hr {
+  margin: 14px 0 12px;
+  border: none;
+  border-top: 1.5px solid var(--color-accent); /* colour 4 - same as the day container's ball */
+  opacity: .25;
+}
+.ep-plan-day__note {
+  font-weight: 700;
+  font-size: .88rem;
+  color: var(--color-secondary-2); /* colour 3 - note, green */
+}
+
+@media (max-width: 560px) {
+  .ep-plan-day__body { padding-left: 20px; }
+}
+
+/* ---------- divider between plan / package tabs / FAQs ---------- */
+.ep-tour-divider {
+  margin: 36px 0;
+  border: none;
+  border-top: 2px solid var(--color-accent); /* colour 4 */
+  opacity: .18;
+}
+
+/* ---------- package tabs: Inclusions / Exclusions / Hotels ---------- */
+.ep-tour-tabs__nav { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+.ep-tour-tabs__btn {
+  font-family: var(--f-accent); font-weight: 700; font-size: .92rem;
+  color: var(--color-accent); background: #fff;
+  border: 1.5px solid var(--border-soft); padding: .65rem 1.4rem;
+  border-radius: 999px; cursor: pointer;
+  transition: background .2s ease, color .2s ease, border-color .2s ease;
+}
+.ep-tour-tabs__btn:hover { border-color: var(--color-primary); }
+.ep-tour-tabs__btn.is-active {
+  background: var(--color-primary); border-color: var(--color-primary); color: var(--color-secondary-1);
+}
+
+.ep-tour-tabs__panel {
+  background: #fff; border-radius: 16px; box-shadow: 0 8px 24px var(--shadow-soft); padding: 26px 28px;
+}
+.ep-tour-tabs__list { list-style: none; display: flex; flex-direction: column; gap: 14px; margin: 0; padding: 0; }
+.ep-tour-tabs__list li {
+  display: flex; align-items: flex-start; gap: 14px;
+  font-family: var(--f-body); color: var(--text-primary); font-size: .97rem; line-height: 1.6;
+}
+.ep-tour-tabs__list li i {
+  flex: none; width: 2rem; height: 2rem; border-radius: 50%; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  color: var(--color-primary); font-size: .85rem;
+}
+.ep-tour-tabs__panel--exclusion .ep-tour-tabs__list li i {
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  color: var(--color-accent);
+}
+.ep-tour-tabs__hotel { display: flex; flex-direction: column; gap: 16px; }
+.ep-tour-tabs__hotel-row {
+  display: flex; align-items: center; gap: 16px; padding: 14px 16px;
+  border-radius: 12px; background: var(--surface); border: 1px solid var(--border-soft);
+}
+.ep-tour-tabs__hotel-row i {
+  flex: none; width: 2.4rem; height: 2.4rem; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--color-secondary-2) 30%, transparent);
+  color: var(--color-accent); font-size: 1rem;
+}
+.ep-tour-tabs__hotel-range { font-family: var(--f-accent); font-weight: 700; font-size: .82rem; color: var(--color-primary); display: block; margin-bottom: 2px; }
+.ep-tour-tabs__hotel-name { font-weight: 700; color: var(--color-accent); }
+.ep-tour-tabs__hotel-stars { font-size: .85rem; color: var(--text-muted); }
+
+@media (max-width: 560px) {
+  .ep-tour-tabs__panel { padding: 20px; }
+}
+
+.ep-tour-tabs__vendor-note {
+  margin: 16px 2px 0;
+  font-family: var(--f-body); font-style: italic; font-size: .82rem; line-height: 1.6;
+  color: var(--text-muted);
+}
+
+/* ---------- FAQs + download ---------- */
+.ep-tour-faq__grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 640px) {
+  .ep-tour-faq__grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+}
+.ep-tour-faq-item { background: #fff; border: 1px solid var(--border-soft); border-radius: 12px; overflow: hidden; }
+.ep-tour-faq-item summary {
+  list-style: none; cursor: pointer; display: flex; align-items: center; gap: 14px;
+  padding: 14px 16px; font-family: var(--f-accent); font-weight: 600; font-size: .95rem; color: var(--color-accent);
+}
+.ep-tour-faq-item summary::-webkit-details-marker { display: none; }
+.ep-tour-faq-item__icon {
+  flex: none; width: 2.1rem; height: 2.1rem; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: .85rem; color: #fff;
+}
+.ep-tour-faq-item__q { flex: 1 1 auto; }
+.ep-tour-faq-item__chevron { flex: none; width: 1rem; color: var(--color-accent); transition: transform .2s ease; }
+.ep-tour-faq-item[open] .ep-tour-faq-item__chevron { transform: rotate(180deg); }
+.ep-tour-faq-item__body { padding: 0 16px 16px 50px; color: var(--text-muted); font-size: .9rem; line-height: 1.65; }
+
+.ep-tour-download { text-align: center; margin-top: 30px; }
+.ep-tour-download__btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--f-accent); font-weight: 700; font-size: 1rem;
+  background: var(--color-secondary-2); color: var(--color-accent); /* colour 3 */
+  padding: 14px 32px; border-radius: 999px; border: none; cursor: pointer;
+  text-decoration: none; transition: background .2s ease;
+}
+.ep-tour-download__btn:hover { background: color-mix(in srgb, var(--color-secondary-2) 85%, black); }
+.ep-tour-download__btn svg { width: 1.05rem; height: auto; }
+
+/* ---------- two-column layout: plan (left) / enquire + glance (right) ---------- */
+.ep-tour-row { align-items: flex-start; }
+.ep-tour-side { display: flex; flex-direction: column; gap: 24px; position: sticky; top: calc(var(--ep-header-h, 88px) + 20px); }
+
+.ep-enquire, .ep-glance { background: #fff; border-radius: 16px; padding: 28px; box-shadow: 0 8px 24px var(--shadow-soft); }
+
+.ep-enquire__title, .ep-glance__title {
+  font-family: var(--f-heading); color: var(--color-accent); font-size: 1.25rem;
+  text-transform: uppercase; letter-spacing: .02em; margin-bottom: 10px;
+}
+.ep-enquire__sub { font-family: var(--f-body); color: var(--text-muted); font-size: .92rem; margin-bottom: 22px; }
+
+.ep-enquiry-field { display: flex; flex-direction: column; gap: 6px; font-family: var(--f-accent); font-weight: 600; font-size: .9rem; color: var(--color-accent); margin-bottom: 16px; }
+.ep-enquiry-field input {
+  font-family: var(--f-body); font-size: .95rem; padding: 12px 14px; border-radius: 10px;
+  border: 1.5px solid var(--border-soft); background: #fff;
+}
+.ep-enquiry-field input::placeholder { color: var(--text-muted); opacity: .8; }
+.ep-enquiry-field input:focus { outline: none; border-color: var(--color-primary); }
+.ep-enquiry-field input[readonly] {
+  background: color-mix(in srgb, var(--color-secondary-1) 68%, white);
+  border-color: color-mix(in srgb, var(--border-soft) 75%, var(--color-accent));
+  color: var(--color-accent);
+  cursor: not-allowed;
+}
+.ep-enquiry-field input[readonly]:focus { border-color: color-mix(in srgb, var(--border-soft) 75%, var(--color-accent)); }
+.ep-enquiry-field__hint { font-weight: 500; font-size: .78rem; color: var(--text-muted); text-transform: none; letter-spacing: 0; margin-left: 4px; }
+.ep-enquiry-field input[type="date"] { color: var(--color-accent); }
+
+.ep-enquiry-tc { display: flex; align-items: flex-start; gap: 12px; font-size: .85rem; color: var(--text-muted); margin: 6px 0 20px; cursor: pointer; }
+.ep-enquiry-tc a { color: var(--color-primary); font-weight: 700; }
+
+/* custom checkbox: swap the bare native box for a rounded, branded one */
+.ep-enquiry-tc input[type="checkbox"] {
+  appearance: none; -webkit-appearance: none; -moz-appearance: none;
+  flex: none;
+  width: 22px; height: 22px;
+  margin-top: 1px;
+  border: 1.5px solid var(--border-soft);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  position: relative;
+  transition: background-color .15s ease, border-color .15s ease, transform .1s ease;
+}
+.ep-enquiry-tc input[type="checkbox"]:hover { border-color: var(--color-primary); }
+.ep-enquiry-tc input[type="checkbox"]:active { transform: scale(.92); }
+.ep-enquiry-tc input[type="checkbox"]:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.ep-enquiry-tc input[type="checkbox"]:checked { background: var(--color-primary); border-color: var(--color-primary); }
+.ep-enquiry-tc input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 7px; top: 3px;
+  width: 5px; height: 10px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(40deg);
+}
+
+.ep-enquiry-recaptcha { margin-bottom: 20px; }
+.ep-enquiry-recaptcha > div { transform-origin: 0 0; }
+@media (max-width: 360px) { .ep-enquiry-recaptcha > div { transform: scale(.9); } }
+
+.ep-enquiry-submit {
+  display: block; width: 100%; border: none; cursor: pointer;
+  font-family: var(--f-accent); font-weight: 700; font-size: 1rem; color: #fff;
+  background: var(--color-primary); padding: 15px; border-radius: 999px;
+  transition: background .2s ease;
+}
+.ep-enquiry-submit:hover { background: var(--color-accent); }
+.ep-enquiry-submit:disabled { opacity: .6; cursor: default; }
+
+.ep-form-msg { margin-top: 14px; font-family: var(--f-body); font-weight: 700; font-size: .9rem; }
+.ep-form-msg[data-state="success"] { color: #2e7d32; }
+.ep-form-msg[data-state="error"] { color: #c62828; }
+
+/* ---------- at a glance card ---------- */
+.ep-glance__list { display: flex; flex-direction: column; }
+.ep-glance__row {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  padding: 13px 0; border-bottom: 1px solid var(--border-soft);
+  font-family: var(--f-body);
+}
+.ep-glance__row:first-child { padding-top: 0; }
+.ep-glance__row dt { color: var(--text-muted); font-size: .95rem; }
+.ep-glance__row dd { color: var(--color-accent); font-weight: 700; font-family: var(--f-accent); }
+.ep-glance__price { font-family: var(--f-heading); color: var(--color-primary); font-size: 1.9rem; margin-top: 20px; }
+.ep-glance__price-note { font-family: var(--f-body); color: var(--text-muted); font-size: .85rem; }

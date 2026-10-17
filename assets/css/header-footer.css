@@ -1,0 +1,690 @@
+@import url("https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Aleo:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,700&family=Podkova:wght@400;500;600;700;800&display=swap");
+
+/* ============================================================
+   Embark Pedia :: shared header + footer stylesheet
+   ------------------------------------------------------------
+   This is the "CSS common to every page" file for the site's
+   header and footer. Linked once from each page's <head>, after
+   that page's own stylesheet (style.css, plus home.css on index.html).
+
+   The :root tokens below intentionally repeat the same font and
+   color tokens already defined in assets/css/style.css (same names, same values) so this
+   file renders correctly even on a page that, for whatever
+   reason, does not load that stylesheet. Declaring
+   the same custom property twice with the same value is harmless.
+   ============================================================ */
+
+:root {
+  /* Typography - 3 fonts, sitewide */
+  --f-heading: "Cinzel Decorative", serif;   /* artistic display font - headings only, bold. Not used in the header; used sparingly in the footer (tagline, column titles). */
+  --f-body: "Aleo", serif;                   /* primary tourism-friendly reading font */
+  --f-accent: "Podkova", serif;              /* secondary accent font - nav, buttons, labels */
+
+  /* Brand palette - 4 colors, sitewide */
+  --color-primary: #E91E63;      /* A. Primary 35% - nav, buttons, active states */
+  --color-secondary-1: #FDF6F0;  /* B. Secondary 1 25% - cards, light sections */
+  --color-secondary-2: #9CCC65;  /* C. Secondary 2 + highlights 20% - icons, badges, hover */
+  --color-accent: #4A2C3A;       /* D. Accent 20% - text, shadows, dark sections */
+
+  /* Aliases (still only the 4 colors above) */
+  --text-primary: var(--color-accent);
+  --text-muted: color-mix(in srgb, var(--color-accent) 70%, var(--color-secondary-1));
+  --surface: var(--color-secondary-1);
+  --border-soft: color-mix(in srgb, var(--color-accent) 15%, var(--color-secondary-1));
+  --shadow-soft: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  --shadow-strong: color-mix(in srgb, var(--color-accent) 20%, transparent);
+
+  /* Header/footer specific sizing */
+  --ep-header-h: 88px;
+  --ep-header-h-mobile: 64px;
+  --ep-radius: 16px;
+  --ep-radius-pill: 999px;
+  --ep-transition: 0.25s ease;
+}
+
+/* Header is fixed, so push all page content clear of it. This is
+   a deliberate simplification: rather than reworking every page's
+   hero/breadcrumb spacing to sit *under* a transparent overlay
+   nav, the header always pushes content down like a conventional
+   sticky bar, and gets its "floating glass" look from blur +
+   transparency rather than from overlaying the hero image. */
+body { padding-top: var(--ep-header-h); }
+@media (max-width: 991px) {
+  body { padding-top: var(--ep-header-h-mobile); }
+}
+
+.ep-visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ------------------------------------------------------------
+   Buttons (shared by header + footer)
+   ------------------------------------------------------------ */
+.ep-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--f-accent);
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  padding: 0.65em 1.4em;
+  border-radius: var(--ep-radius-pill);
+  border: 2px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform var(--ep-transition), box-shadow var(--ep-transition),
+              background-color var(--ep-transition), color var(--ep-transition);
+  white-space: nowrap;
+}
+.ep-btn--pill { background: var(--color-primary); color: var(--color-secondary-1); }
+.ep-btn--pill:hover {
+  background: color-mix(in srgb, var(--color-primary) 85%, black);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px var(--shadow-soft);
+  color: var(--color-secondary-1);
+}
+.ep-btn--accent { background: var(--color-secondary-2); color: var(--color-accent); }
+.ep-btn--accent:hover { background: color-mix(in srgb, var(--color-secondary-2) 85%, black); }
+.ep-btn--block { width: 100%; justify-content: center; }
+.ep-btn svg { width: 14px; height: 14px; }
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.ep-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2000;
+  font-family: var(--f-accent);
+}
+
+.ep-header__wash {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.ep-header__wash svg { width: 100%; height: 100%; filter: blur(10px); opacity: 0.5; }
+.ep-header__wash-shape--1 { fill: var(--color-secondary-2); opacity: 0.35; }
+.ep-header__wash-shape--2 { fill: var(--color-primary); opacity: 0.18; }
+
+.ep-header__bar {
+  position: relative;
+  z-index: 1;
+  background: color-mix(in srgb, var(--color-secondary-1) 78%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 8%, transparent);
+  transition: background-color var(--ep-transition), box-shadow var(--ep-transition);
+}
+.ep-header.is-scrolled .ep-header__bar {
+  background: var(--color-secondary-1);
+  box-shadow: 0 6px 24px var(--shadow-soft);
+}
+
+.ep-header__inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  height: var(--ep-header-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  gap: 16px;
+}
+@media (max-width: 991px) {
+  .ep-header__inner { height: var(--ep-header-h-mobile); padding: 0 18px; }
+}
+
+.ep-nav { flex: 1 1 0; display: flex; }
+.ep-nav--left { justify-content: flex-start; }
+.ep-nav--right { justify-content: flex-end; }
+.ep-nav ul { list-style: none; display: flex; align-items: center; gap: 28px; margin: 0; padding: 0; }
+/* .ep-nav ul (class+element, specificity 0,1,1) would otherwise force display:flex
+   on the nested .ep-dropdown <ul> too, breaking its vertical list layout — this
+   selector (0,2,0) is deliberately more specific so it always wins. */
+.ep-nav .ep-dropdown { display: block; }
+@media (max-width: 991px) {
+  .ep-nav { display: none; }
+}
+
+.ep-nav__link, .ep-dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--f-accent);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  padding: 6px 2px;
+  position: relative;
+}
+.ep-nav__link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 100%;
+  bottom: -2px;
+  height: 2px;
+  background: var(--color-primary);
+  transition: right var(--ep-transition);
+}
+.ep-nav__link:hover::after, .ep-nav__link.is-active::after { right: 0; }
+.ep-nav__link.is-active, .ep-nav__link:hover { color: var(--color-primary); }
+
+.ep-chevron { width: 10px; height: 8px; transition: transform var(--ep-transition); }
+.ep-has-dropdown.is-open .ep-chevron,
+.ep-has-dropdown:hover .ep-chevron { transform: rotate(180deg); }
+
+.ep-has-dropdown { position: relative; }
+.ep-dropdown {
+  position: absolute;
+  top: calc(100% + 14px);
+  left: 50%;
+  transform: translate(-50%, 8px);
+  min-width: 250px;
+  background: var(--color-secondary-1);
+  border-radius: var(--ep-radius);
+  box-shadow: 0 16px 40px var(--shadow-strong);
+  list-style: none;
+  margin: 0;
+  padding: 10px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--ep-transition), transform var(--ep-transition), visibility var(--ep-transition);
+  z-index: 10;
+}
+.ep-dropdown li a {
+  display: block;
+  padding: 10px 14px;
+  border-radius: 10px;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-family: var(--f-body);
+  font-size: 0.92rem;
+}
+.ep-dropdown li a:hover {
+  background: color-mix(in srgb, var(--color-secondary-2) 35%, transparent);
+  color: var(--color-primary);
+}
+.ep-dropdown__divider {
+  height: 1px;
+  margin: 8px 6px;
+  background: color-mix(in srgb, var(--text-primary) 12%, transparent);
+  list-style: none;
+}
+.ep-has-dropdown:hover .ep-dropdown,
+.ep-has-dropdown.is-open .ep-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
+.ep-dropdown--mega { display: flex; gap: 24px; min-width: 480px; padding: 22px 26px; }
+.ep-dropdown--mega .ep-dropdown__col h6 {
+  font-family: var(--f-heading);
+  font-weight: 700;
+  color: var(--color-primary);
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0 0 8px;
+}
+.ep-dropdown--mega .ep-dropdown__col ul { list-style: none; margin: 0; padding: 0; }
+.ep-dropdown--mega .ep-dropdown__col a {
+  display: block;
+  padding: 6px 4px;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-family: var(--f-body);
+  font-size: 0.9rem;
+}
+.ep-dropdown--mega .ep-dropdown__col a:hover { color: var(--color-primary); }
+
+/* Simplified Destination dropdown */
+.ep-dropdown--dest { min-width: 200px; }
+.ep-dropdown--dest li a {
+  font-family: var(--f-body);
+  font-weight: 400;
+  font-size: 0.92rem;
+  color: var(--text-primary);
+  letter-spacing: 0;
+}
+.ep-dropdown--dest li a:hover { color: var(--color-primary); background: color-mix(in srgb, var(--color-secondary-2) 35%, transparent); }
+.ep-dropdown li a.ep-dropdown__all {
+  color: var(--color-primary) !important;
+  font-weight: 800 !important;
+}
+.ep-dropdown li a.ep-dropdown__all:hover {
+  color: var(--color-secondary-2) !important;
+  background: transparent;
+}
+
+.ep-header__logo { flex: 0 0 auto; }
+.ep-header__logo img { height: 52px; width: auto; display: block; }
+.ep-header__logo--mobile { display: none; }
+@media (max-width: 991px) {
+  .ep-header__logo--mobile { display: block; }
+  .ep-header__logo:not(.ep-header__logo--mobile) { display: none; }
+  .ep-header__logo--mobile img { height: 40px; }
+}
+
+.ep-hamburger { display: none; }
+@media (max-width: 991px) {
+  .ep-hamburger {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+  }
+  .ep-hamburger span {
+    display: block;
+    height: 2px;
+    width: 24px;
+    background: var(--color-accent);
+    border-radius: 2px;
+  }
+}
+
+/* ---- mobile drawer ---- */
+.ep-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in srgb, var(--color-accent) 55%, transparent);
+  z-index: 2050;
+}
+.ep-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(340px, 86vw);
+  background: var(--color-secondary-1);
+  box-shadow: -10px 0 40px var(--shadow-strong);
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  z-index: 2100;
+  overflow-y: auto;
+}
+.ep-drawer.is-open { transform: translateX(0); }
+.ep-drawer__panel { padding: 24px 22px 32px; display: flex; flex-direction: column; min-height: 100%; }
+.ep-drawer__close { align-self: flex-end; background: none; border: none; cursor: pointer; padding: 6px; margin-bottom: 12px; }
+.ep-drawer__close svg { width: 20px; height: 20px; color: var(--color-accent); }
+
+.ep-drawer__nav { flex: 1; margin-top: 8px; margin-bottom: 24px; }
+.ep-drawer__nav ul { list-style: none; margin: 0; padding: 0; }
+.ep-drawer__nav > ul > li > a,
+.ep-drawer__accordion > button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--f-accent);
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  padding: 14px 4px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.ep-drawer__nav > ul > li:last-child { border-bottom: none; margin-top: 12px; }
+.ep-drawer__accordion > ul { list-style: none; margin: 0; padding: 0 0 8px 12px; display: none; }
+.ep-drawer__accordion.is-open > ul { display: block; }
+.ep-drawer__accordion .ep-chevron { transition: transform var(--ep-transition); }
+.ep-drawer__accordion.is-open .ep-chevron { transform: rotate(180deg); }
+.ep-drawer__subgroup > span {
+  display: block;
+  font-family: var(--f-heading);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin: 10px 0 4px;
+}
+.ep-drawer__subgroup ul { list-style: none; margin: 0; padding: 0; }
+.ep-drawer__subgroup a { display: block; padding: 6px 4px; color: var(--text-primary); text-decoration: none; font-family: var(--f-body); font-size: 0.92rem; }
+
+.ep-drawer__logo { text-align: center; margin-top: auto; padding-top: 20px; }
+.ep-drawer__logo img { height: 46px; }
+
+@media (min-width: 992px) {
+  .ep-drawer, .ep-drawer-backdrop, .ep-hamburger { display: none !important; }
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.ep-footer {
+  position: relative;
+  background: var(--color-accent);
+  color: var(--color-secondary-1);
+  font-family: var(--f-body);
+  overflow: hidden;
+}
+.ep-footer__wash { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+.ep-footer__wash svg { width: 100%; height: 100%; filter: blur(12px); opacity: 0.35; }
+.ep-footer__wash-shape--1 { fill: var(--color-secondary-2); }
+.ep-footer__wash-shape--2 { fill: var(--color-primary); opacity: 0.5; }
+
+.ep-footer__main {
+  position: relative;
+  z-index: 1;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 56px 28px 32px;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 32px;
+}
+@media (max-width: 900px) { .ep-footer__main { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 600px) { .ep-footer__main { grid-template-columns: 1fr; text-align: center; } }
+
+.ep-footer__logo { height: 46px; margin-bottom: 14px; }
+.ep-footer__tagline { font-family: var(--f-heading); font-weight: 700; font-size: 1.05rem; color: var(--color-secondary-2); margin: 0 0 16px; }
+.ep-footer__brand address { font-style: normal; }
+.ep-footer__brand address p { margin: 0 0 8px; color: color-mix(in srgb, var(--color-secondary-1) 80%, transparent); font-size: 0.92rem; }
+.ep-footer__brand address a { color: inherit; text-decoration: none; }
+.ep-footer__brand address a:hover { color: var(--color-secondary-2); }
+
+.ep-footer__col h4 { font-family: var(--f-heading); font-weight: 700; font-size: 1rem; color: var(--color-secondary-1); margin: 0 0 16px; letter-spacing: 0.02em; }
+.ep-footer__col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.ep-footer__col ul a { color: color-mix(in srgb, var(--color-secondary-1) 78%, transparent); text-decoration: none; font-size: 0.92rem; transition: color var(--ep-transition); }
+.ep-footer__col ul a:hover { color: var(--color-secondary-2); text-decoration: underline; }
+
+.ep-footer__social-icons { display: flex; gap: 12px; justify-content: flex-start; }
+@media (max-width: 600px) { .ep-footer__social-icons { justify-content: center; } }
+.ep-footer__social-icons a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-secondary-1) 10%, transparent);
+  transition: background var(--ep-transition), transform var(--ep-transition);
+}
+.ep-footer__social-icons a:hover { background: var(--color-secondary-2); transform: translateY(-2px); }
+.ep-footer__social-icons svg { width: 18px; height: 18px; fill: none; stroke: var(--color-secondary-1); stroke-width: 1.6; }
+.ep-footer__social-icons a:hover svg { stroke: var(--color-accent); }
+
+/* Newsletter signup, folded into the "Follow Along" column below the
+   social icons. Same pill recipe as the destination search bar
+   (assets/css/destinations-page.css .ep-search) - a rounded, clipped
+   bar with a plain input and a solid button - but in the 3rd brand
+   colour (--color-secondary-2) rather than the search bar's primary pink. */
+.ep-footer__subscribe { margin-top: 24px; }
+.ep-footer__subscribe-title {
+  /* Matches the sitewide heading font + weight used by the other
+     footer column titles (.ep-footer__col h4 below) — this used to
+     be set in the accent font instead, so it visually clashed with
+     every other heading in the footer. */
+  font-family: var(--f-heading);
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  color: var(--color-secondary-1);
+  margin: 0 0 12px;
+}
+.ep-footer__subscribe-form {
+  display: flex;
+  max-width: 340px;
+  border-radius: var(--ep-radius-pill);
+  overflow: hidden;
+  background: color-mix(in srgb, var(--color-secondary-1) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-secondary-1) 25%, transparent);
+}
+@media (max-width: 600px) { .ep-footer__subscribe-form { margin: 0 auto; } }
+.ep-footer__subscribe-form input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  padding: 0.8em 1.1em;
+  font-family: var(--f-body);
+  font-size: 0.9rem;
+  color: var(--color-secondary-1);
+}
+.ep-footer__subscribe-form input::placeholder { color: color-mix(in srgb, var(--color-secondary-1) 55%, transparent); }
+.ep-footer__subscribe-form input:focus { outline: none; }
+.ep-footer__subscribe-form button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  border: 0;
+  padding: 0 18px;
+  font-family: var(--f-accent);
+  font-weight: 700;
+  font-size: 0.85rem;
+  background: var(--color-secondary-2);
+  color: var(--color-accent);
+  cursor: pointer;
+  transition: background var(--ep-transition);
+}
+.ep-footer__subscribe-form button:hover { background: color-mix(in srgb, var(--color-secondary-2) 85%, white); }
+.ep-footer__subscribe-form button svg { width: 13px; height: 13px; }
+.ep-footer__subscribe .ep-newsletter-success { display: block; margin-top: 12px; color: var(--color-secondary-2); font-weight: 600; font-size: 0.88rem; }
+
+.ep-footer__bottom {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid color-mix(in srgb, var(--color-secondary-1) 15%, transparent);
+  padding: 18px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: color-mix(in srgb, var(--color-secondary-1) 70%, transparent);
+}
+.ep-footer__bottom-links { display: flex; gap: 18px; }
+.ep-footer__bottom-links a { color: inherit; text-decoration: none; }
+.ep-footer__bottom-links a:hover { color: var(--color-secondary-2); text-decoration: underline; }
+
+.ep-back-to-top {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 1500;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: var(--color-secondary-1);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px var(--shadow-strong);
+  transition: transform var(--ep-transition), opacity var(--ep-transition);
+}
+.ep-back-to-top svg { width: 18px; height: 18px; }
+.ep-back-to-top:hover { transform: translateY(-3px); }
+.ep-back-to-top[hidden] { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ep-header__bar, .ep-nav__link, .ep-dropdown, .ep-drawer, .ep-btn, .ep-back-to-top { transition: none !important; }
+}
+
+.ep-header a:focus-visible, .ep-header button:focus-visible,
+.ep-footer a:focus-visible, .ep-footer button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------
+   Bug fix (pre-existing, found while wiring up the new roam links):
+   the vendored assets/css/bootstrap.min.css ships a corrupted default
+   for the breadcrumb divider —
+     content: var(--bs-breadcrumb-divider, "https://demo-egenslab.b-cdn.net/")
+   — instead of the normal "/". That literal URL was rendering between
+   every breadcrumb item on every page (About, Contact, Destinations,
+   Roams, this new Event Details page, etc). Overriding it here rather
+   than hand-editing the vendored file.
+   -------------------------------------------------------------------- */
+.breadcrumb-item + .breadcrumb-item::before {
+  content: "/";
+}
+
+/* X (Twitter) glyph used in topbar / hero / footer social icons */
+.ep-x-icon { width: 1em; height: 1em; fill: currentColor; stroke: none; display: inline-block; vertical-align: -0.125em; }
+.ep-footer__social-icons svg.ep-x-icon { width: 17px; height: 17px; fill: var(--color-secondary-1); stroke: none; }
+.ep-footer__social-icons a:hover svg.ep-x-icon { fill: var(--color-accent); }
+.topbar-social-links a svg.ep-x-icon { width: 1em; height: 1em; }
+
+/* Honeypot anti-spam field (contact, signup, newsletter forms).
+   Off-screen rather than display:none/visibility:hidden so that bots
+   which specifically skip those two properties still fill it in. */
+.ep-hp-field {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.ep-form-msg[data-state="success"] { color: var(--color-secondary-2, #1a7f37); }
+.ep-form-msg[data-state="error"] { color: #b3261e; }
+
+/* Contact-form consent checkbox (replaces a passive disclaimer paragraph
+   — see contact/contact.html). Submit stays disabled until this is checked.
+   Deliberately NOT inside .custom-input-group: that wrapper's `input`
+   rules (pill-shaped background, appearance:none, 52px height, etc.) are
+   meant for text/tel/email fields and, if applied here, render the
+   checkbox as a plain blank circle with no visible check state — which is
+   exactly why it used to be hard to recognise as a checkbox. The native
+   input is kept (for real keyboard/screen-reader behaviour) but visually
+   hidden; a sibling span draws the actual box people see and click. */
+.contact-consent-group { margin: 20px 0 18px; }
+.contact-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  cursor: pointer;
+}
+.contact-consent input[type="checkbox"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.contact-consent__box {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  box-sizing: border-box;
+  border: 2px solid color-mix(in srgb, var(--color-accent, #4A2C3A) 45%, transparent);
+  border-radius: 5px;
+  background: var(--color-secondary-1, #FDF6F0);
+  position: relative;
+  transition: background .15s ease, border-color .15s ease;
+}
+.contact-consent__box::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  opacity: 0;
+  transition: opacity .1s ease;
+}
+.contact-consent input[type="checkbox"]:checked ~ .contact-consent__box {
+  background: var(--color-primary, #E91E63);
+  border-color: var(--color-primary, #E91E63);
+}
+.contact-consent input[type="checkbox"]:checked ~ .contact-consent__box::after {
+  opacity: 1;
+}
+.contact-consent input[type="checkbox"]:focus-visible ~ .contact-consent__box {
+  outline: 2px solid var(--color-primary, #E91E63);
+  outline-offset: 2px;
+}
+.contact-consent__text { flex: 1 1 auto; }
+button[disabled] { opacity: 0.55; cursor: not-allowed; }
+
+/* Newsletter confirm dialog (Accept / Deny) shown on submit — see
+   assets/js/chrome.js. Plain, dependency-free modal matching the
+   brand palette already defined above. */
+.ep-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(74, 44, 58, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+}
+.ep-confirm-overlay[hidden] { display: none; }
+.ep-confirm-box {
+  background: var(--color-secondary-1, #FDF6F0);
+  color: var(--color-accent, #4A2C3A);
+  border-radius: 14px;
+  max-width: 420px;
+  width: 100%;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+.ep-confirm-box h3 {
+  font-family: var(--f-heading);
+  font-size: 1.1rem;
+  margin: 0 0 12px;
+}
+.ep-confirm-box p {
+  font-family: var(--f-body);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  margin: 0 0 20px;
+}
+.ep-confirm-box__actions { display: flex; gap: 12px; justify-content: flex-end; }
+.ep-confirm-box__actions button {
+  font-family: var(--f-accent);
+  border: none;
+  border-radius: 999px;
+  padding: 10px 20px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ep-confirm-deny { background: transparent; border: 1.5px solid var(--color-accent, #4A2C3A); color: var(--color-accent, #4A2C3A); }
+.ep-confirm-accept { background: var(--color-secondary-2, #9CCC65); color: var(--color-accent, #4A2C3A); }

@@ -1,0 +1,65 @@
+/* Embark Pedia :: "Our Clients" rotating logo strip.
+   8 logos in the data pool, 4 shown at a time; every 3s one slot fades
+   out and the next logo in the pool fades into that same slot, so the
+   strip keeps slowly cycling through all 8. All logos stay greyscale. */
+.scheme-a-clients-area .section-heading h4 {
+  color: var(--color-accent, #4A2C3A);
+}
+
+.scheme-a-clients-area .section-heading span {
+  background-color: var(--color-accent, #4A2C3A);
+}
+
+.scheme-a-clients-area .section-heading p {
+  color: var(--text-muted, #4A2C3A);
+}
+
+.clients-carousel {
+  max-width: 1100px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.clients-carousel__track {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 40px;
+}
+
+.clients-carousel__slot {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 72px;
+  min-width: 0;
+}
+
+.clients-carousel__slot img {
+  max-height: 72px;
+  max-width: 92%;
+  width: auto;
+  object-fit: contain;
+  filter: grayscale(100%);
+  opacity: 0.7;
+  transition: opacity 500ms ease;
+}
+
+.clients-carousel__slot.is-fading img {
+  opacity: 0;
+}
+
+.clients-carousel__slot img:hover {
+  opacity: 0.85;
+}
+
+@media (max-width: 767px) {
+  .clients-carousel__track {
+    flex-wrap: wrap;
+    gap: 28px 20px;
+  }
+  .clients-carousel__slot {
+    flex: 1 1 40%;
+  }
+}

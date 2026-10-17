@@ -1,0 +1,203 @@
+/* ============================================================
+   Embark Pedia :: Support & Legal pages
+   ------------------------------------------------------------
+   Shared by support/privacy-policy.html, support/terms-of-service.html,
+   support/faqs.html and support/cancellation-policy.html. Loaded after
+   header-footer.css, same convention as destinations-page.css /
+   roams-page.css (one file per page group).
+   ============================================================ */
+
+.ep-legal-main { padding-bottom: 100px; }
+
+.ep-legal-meta {
+    max-width: 760px;
+    margin: 0 auto 48px;
+    text-align: center;
+}
+.ep-legal-meta .ep-legal-updated {
+    display: inline-block;
+    font-family: var(--f-accent);
+    font-size: 0.82rem;
+    letter-spacing: 0.02em;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--ep-radius-pill);
+    padding: 6px 18px;
+    margin-bottom: 18px;
+}
+.ep-legal-meta p {
+    color: var(--text-muted);
+    font-size: 1.02rem;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.ep-legal-body { max-width: 760px; margin: 0 auto; }
+
+.ep-legal-section { margin-bottom: 40px; }
+.ep-legal-section:last-child { margin-bottom: 0; }
+
+.ep-legal-section h3 {
+    font-family: var(--f-heading);
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: var(--color-accent);
+    margin: 0 0 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.ep-legal-section p {
+    color: var(--text-primary);
+    font-size: 1rem;
+    line-height: 1.8;
+    margin: 0 0 16px;
+}
+.ep-legal-section p:last-child { margin-bottom: 0; }
+
+.ep-legal-section ul, .ep-legal-section ol {
+    margin: 0 0 16px;
+    padding: 0;
+    list-style: none;
+}
+.ep-legal-section ul li, .ep-legal-section ol li {
+    position: relative;
+    padding-left: 26px;
+    color: var(--text-primary);
+    line-height: 1.75;
+    margin-bottom: 10px;
+}
+.ep-legal-section ul li:last-child, .ep-legal-section ol li:last-child { margin-bottom: 0; }
+.ep-legal-section ul li::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 10px;
+    width: 7px;
+    height: 7px;
+    border-radius: 2px;
+    background: var(--color-primary);
+    transform: rotate(45deg);
+}
+.ep-legal-section ol { counter-reset: ep-legal-ol; }
+.ep-legal-section ol li { counter-increment: ep-legal-ol; }
+.ep-legal-section ol li::before {
+    content: counter(ep-legal-ol);
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-family: var(--f-accent);
+    font-weight: 700;
+    font-size: 0.78rem;
+    color: var(--color-primary);
+}
+
+.ep-legal-section a { color: var(--color-primary); text-decoration: underline; text-underline-offset: 2px; }
+.ep-legal-section a:hover { color: var(--color-accent); }
+
+.ep-legal-section strong { color: var(--color-accent); }
+
+/* refund / cancellation tiers table */
+.ep-legal-table-wrap { overflow-x: auto; margin: 0 0 16px; }
+.ep-legal-table {
+    width: 100%;
+    min-width: 440px;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+.ep-legal-table th, .ep-legal-table td {
+    text-align: left;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-soft);
+}
+.ep-legal-table thead th {
+    font-family: var(--f-accent);
+    font-weight: 700;
+    font-size: 0.82rem;
+    letter-spacing: 0.02em;
+    color: var(--color-secondary-1);
+    background: var(--color-accent);
+    border-bottom: none;
+}
+.ep-legal-table thead th:first-child { border-top-left-radius: 10px; }
+.ep-legal-table thead th:last-child { border-top-right-radius: 10px; }
+.ep-legal-table tbody td { color: var(--text-primary); }
+.ep-legal-table tbody tr:nth-child(even) { background: color-mix(in srgb, var(--color-accent) 4%, transparent); }
+.ep-legal-table td.ep-legal-table__refund { font-weight: 700; color: var(--color-accent); }
+
+/* ---------------- FAQ accordion (support/faqs.html) ---------------- */
+.ep-faq-group { margin-bottom: 44px; }
+.ep-faq-group:last-child { margin-bottom: 0; }
+.ep-faq-group h3 {
+    font-family: var(--f-heading);
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--color-accent);
+    margin: 0 0 18px;
+}
+
+.ep-faq-item {
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+.ep-faq-item:last-child { margin-bottom: 0; }
+
+.ep-faq-item summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 20px;
+    cursor: pointer;
+    font-family: var(--f-accent);
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--color-accent);
+}
+.ep-faq-item summary::-webkit-details-marker { display: none; }
+.ep-faq-item summary::marker { content: ""; }
+.ep-faq-item summary:focus-visible { outline: 2px solid var(--color-primary); outline-offset: -2px; }
+
+.ep-faq-item summary .ep-faq-chevron {
+    flex: 0 0 auto;
+    width: 13px;
+    height: 13px;
+    color: var(--color-primary);
+    transition: transform 0.25s ease;
+}
+.ep-faq-item[open] summary .ep-faq-chevron { transform: rotate(180deg); }
+
+.ep-faq-item__body { padding: 0 20px 20px; color: var(--text-muted); line-height: 1.75; }
+.ep-faq-item__body p { margin: 0 0 12px; }
+.ep-faq-item__body p:last-child { margin-bottom: 0; }
+
+/* ---------------- "Still have questions?" closing CTA ---------------- */
+.ep-legal-cta {
+    max-width: 760px;
+    margin: 56px auto 0;
+    text-align: center;
+    padding: 40px 32px;
+    border-radius: var(--ep-radius);
+    background: var(--color-accent);
+}
+.ep-legal-cta h4 {
+    font-family: var(--f-heading);
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: var(--color-secondary-1);
+    margin: 0 0 10px;
+}
+.ep-legal-cta p {
+    color: color-mix(in srgb, var(--color-secondary-1) 80%, transparent);
+    margin: 0 0 22px;
+}
+
+@media (max-width: 575.98px) {
+    .ep-legal-section h3 { font-size: 1.22rem; }
+    .ep-legal-cta { padding: 32px 22px; }
+}

@@ -1,0 +1,96 @@
+/* Embark Pedia :: "Center of Our Universe" testimonial flip-carousel
+   Inspired by the split 3D-flip carousel concept; recoloured with the
+   site palette (primary pink, cream, green, plum). Scoped under .ept. */
+.ept {
+  --h: 560px;
+  --ept-dur: 1s;
+  --ept-plum: var(--color-accent, #4A2C3A);
+  --ept-pink: var(--color-primary, #E91E63);
+  --ept-cream: var(--color-secondary-1, #FDF6F0);
+  --ept-green: var(--color-secondary-2, #9CCC65);
+  position: relative; height: var(--h); max-width: 1180px; margin: 0 auto 60px;
+  border-radius: 24px; overflow: hidden; outline: none;
+  box-shadow: 0 24px 60px color-mix(in srgb, var(--ept-plum) 28%, transparent);
+  background: var(--ept-plum);
+}
+.ept:focus-visible { box-shadow: 0 0 0 3px var(--ept-green), 0 24px 60px color-mix(in srgb, var(--ept-plum) 28%, transparent); }
+.ept.is-static * { transition: none !important; }
+
+.ept__half { --hh: var(--h); position: absolute; top: 0; height: 100%; width: 50%; perspective: 1500px; }
+.ept__half--left { left: 0; }
+.ept__half--right { right: 0; }
+.ept__spinner {
+  position: absolute; inset: 0; transform-style: preserve-3d; --r: 0deg;
+  transform: translateZ(calc(var(--hh) / -2)) rotateX(var(--r));
+  transition: transform var(--ept-dur) cubic-bezier(.65, 0, .35, 1);
+}
+/* fwd: left spins one way, right the opposite (split-flip effect) */
+.ept.is-fwd .ept__half--left  { --nx: 90deg; }
+.ept.is-fwd .ept__half--left  .ept__spinner { --r: -90deg; }
+.ept.is-fwd .ept__half--right { --nx: -90deg; }
+.ept.is-fwd .ept__half--right .ept__spinner { --r: 90deg; }
+.ept.is-bwd .ept__half--left  { --nx: -90deg; }
+.ept.is-bwd .ept__half--left  .ept__spinner { --r: 90deg; }
+.ept.is-bwd .ept__half--right { --nx: 90deg; }
+.ept.is-bwd .ept__half--right .ept__spinner { --r: -90deg; }
+
+.ept__face { position: absolute; inset: 0; display: none; overflow: hidden; backface-visibility: hidden; }
+.ept__face.is-active { display: block; transform: translateZ(calc(var(--hh) / 2)); }
+.ept__face.is-next { display: block; transform: rotateX(var(--nx, 90deg)) translateZ(calc(var(--hh) / 2)); }
+
+/* tones: all mixes of the brand palette */
+.ept__face.t0 { background: var(--ept-plum); }
+.ept__face.t1 { background: color-mix(in srgb, var(--ept-plum) 80%, var(--ept-pink)); }
+.ept__face.t2 { background: color-mix(in srgb, var(--ept-plum) 84%, var(--ept-green)); }
+.ept__face.t3 { background: color-mix(in srgb, var(--ept-plum) 90%, var(--ept-cream)); }
+
+/* left: testimonial image */
+.ept__photo { display: flex; align-items: center; justify-content: center; padding: 28px; }
+.ept__photo::before { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,.12); }
+.ept__photo img {
+  position: relative; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain;
+  border-radius: 14px; box-shadow: 0 14px 36px rgba(0,0,0,.35); border: 4px solid var(--ept-cream); background: var(--ept-cream);
+}
+.ept__photo.no-img::after {
+  content: "\201C"; position: relative; font-family: var(--f-heading, serif); font-size: 9rem; color: var(--ept-green); opacity: .8;
+}
+
+/* right: details */
+.ept__info { display: flex; flex-direction: column; justify-content: center; padding: 0 clamp(28px, 5vw, 64px) 0 clamp(24px, 4vw, 56px); color: var(--ept-cream); font-family: var(--f-body, serif); }
+.ept__eyebrow { font-family: var(--f-accent, serif); font-size: .78rem; letter-spacing: .22em; text-transform: uppercase; color: var(--ept-green); margin: 0 0 14px; }
+.ept__place { font-family: var(--f-heading, serif); font-weight: 700; font-size: clamp(1.7rem, 3.2vw, 2.8rem); line-height: 1.15; margin: 0 0 18px; color: var(--ept-cream); }
+.ept__rule { width: 56px; height: 3px; border-radius: 3px; background: var(--ept-pink); margin-bottom: 20px; }
+.ept__quote { font-size: clamp(.95rem, 1.35vw, 1.1rem); line-height: 1.7; font-weight: 300; opacity: .9; margin: 0 0 20px; font-style: italic; }
+.ept__name { font-family: var(--f-accent, serif); font-weight: 600; font-size: .95rem; letter-spacing: .15em; text-transform: uppercase; margin: 0; }
+.ept__date { font-size: .9rem; opacity: .7; margin: 6px 0 0; }
+.ept__heart { margin-top: 22px; color: var(--ept-pink); font-size: 1.3rem; }
+.ept__index { position: absolute; right: 18px; bottom: -14px; font-family: var(--f-heading, serif); font-weight: 900; font-size: clamp(6rem, 14vw, 11rem); line-height: 1; color: #fff; opacity: .05; pointer-events: none; }
+
+/* vertical controls */
+.ept__control {
+  position: absolute; right: 0; top: 50%; transform: translateY(-50%); z-index: 5;
+  background: var(--ept-cream); border-radius: 18px 0 0 18px; padding: 10px 6px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px; box-shadow: -6px 0 20px rgba(0,0,0,.15);
+}
+.ept__arrow, .ept__dot { border: 0; background: none; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; width: 32px; height: 22px; }
+.ept__arrow { color: var(--ept-plum); }
+.ept__arrow:hover { color: var(--ept-pink); }
+.ept__arrow svg { width: 14px; height: 10px; }
+.ept__dot::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: color-mix(in srgb, var(--ept-plum) 25%, transparent); transition: .25s; }
+.ept__dot:hover::before { background: var(--ept-green); }
+.ept__dot.is-on::before { background: var(--ept-pink); transform: scale(1.35); }
+.ept__arrow:focus-visible, .ept__dot:focus-visible { outline: 2px solid var(--ept-pink); border-radius: 6px; }
+
+@media (max-width: 767px) {
+  .ept { --h: 680px; border-radius: 18px; }
+  .ept__half { width: 100%; left: 0; right: auto; }
+  .ept__half--left { top: 0; height: 46%; --hh: calc(var(--h) * .46); }
+  .ept__half--right { top: 46%; bottom: auto; height: 54%; --hh: calc(var(--h) * .54); }
+  .ept__photo { padding: 16px; }
+  .ept__info { padding: 0 58px 0 24px; }
+  .ept__eyebrow { margin-bottom: 8px; }
+  .ept__rule { margin-bottom: 12px; }
+  .ept__quote { margin-bottom: 12px; }
+  .ept__heart { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .ept__spinner, .ept__dot::before { transition: none; } }
