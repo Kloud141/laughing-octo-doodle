@@ -492,11 +492,6 @@ hardening.
 | **H-5** | High | No email verification exists at signup for any account type — anyone can register (and later request password resets for) an email address they don't own. Combine with H-4 and this becomes a real account-takeover/abuse surface once mail is reliably delivered. | Add an email-verification step (token + confirmation link) at signup, gating at minimum any flow that emails a secret (password reset) until the address is confirmed. |
 | **M-1** | Medium | `rate_limits` has no scheduled cleanup — the retention `DELETE` is only left as a comment in `schema.sql`, never wired to a cron. | Add a daily cron (or a lightweight probabilistic cleanup on write) running `DELETE FROM rate_limits WHERE created_at < NOW() - INTERVAL 1 DAY`. |
 | **M-2** | Medium | No MFA option for admin/vendor/partner accounts, which can run partner payouts, suspend other accounts, and view full customer PII. | Add TOTP-based 2FA, at minimum mandatory for `admin` accounts. |
-| **M-3** | Medium | Password policy is length-only (8–72 chars); no check against known-breached or trivially weak passwords. | Add a k-anonymity breached-password check (e.g., the Have I Been Pwned API) at signup and password-change time. |
-| **M-4** | Medium | No automated backup/retention policy is documented for the MySQL database, which holds customer PII (name, email, phone, age, gender) and financial data (sales, partner earnings, payouts). | Document and test (restore, not just backup) a recurring backup policy, plus a written data-retention/deletion policy for enquiries and closed accounts. |
-| **M-5** | Medium | `logout.php` is the one state-changing endpoint that skips `ep_verify_same_site_request()`. Low real-world impact (a logout CSRF just logs someone out), but it's an inconsistency against an otherwise uniform pattern. | Add the same same-site check for consistency. |
-| **M-6** | Medium | Internal `$conn->query()` calls across `organizer-trips.php`, `organizer-partners.php`, `organizer-vendors.php`, `organizer-enquiries.php` and `customer-profile.php` interpolate a PHP variable directly into the SQL string rather than binding it. Every one currently carries only an `(int)`-cast value, so nothing is exploitable today — but the very next endpoint written in this style, without remembering the cast, reintroduces SQL injection silently. (`organizer-roams.php` no longer exists — see §4.1 — so it's dropped from this list; its own instances of this pattern left with it.) | Refactor these to uniform `prepare()`/`bind_param()` calls (the pattern already used correctly almost everywhere else in the same files), or at minimum add a code-review checklist item / static-analysis rule that flags any `$conn->query()` containing string interpolation. |
-| **L-1** | Low | The login/signup page shows **Google** and **Outlook** SSO buttons that are unwired stubs (`auth.js` comment: *"no backend wired up in this template"*). | Either implement the OAuth flow or remove the buttons — a visible, non-functional login option is a trust/UX problem. |
 | **L-2** | Low | No CDN/WAF sits in front of the application; all abuse control is purely application-level (DB-backed rate limiting). | Consider fronting production with a CDN/WAF (also solves the static-asset performance gap in §7.2). |
 | **L-3** | Low | `mock-backend.js` and its trial credentials must not ship to production — see §5. It's referenced far more widely than just the organizer pages (see §5's correction note). | Remove every `<script src=".../mock-backend.js">` tag before deploy, not just the four organizer ones; consider a build-time check that fails if this file is referenced outside a `dev`/`demo` flag. |
 
@@ -667,7 +662,10 @@ they simply haven't been done yet.
       gender, phone, email) before accepting real customer data — this is
       a legal/compliance item, not just an engineering one.
 - [ ] **B-12** Put a tested (not just configured) database backup +
-      restore process in place (M-4).
+      restore process in place. (The 90-day-primary / 2-year-archive
+      *retention* policy is now in place — `tools/retention-cleanup.php`
+      — but that's a separate concern from a full disaster-recovery
+      backup/restore drill, which is still outstanding.)
 
 ### Should fix soon after launch
 
@@ -675,13 +673,8 @@ they simply haven't been done yet.
 - [ ] Add email verification at signup (H-5).
 - [ ] Schedule `rate_limits` cleanup (M-1).
 - [ ] Add 2FA for admin accounts at minimum (M-2).
-- [ ] Add breached-password screening (M-3).
-- [ ] Add the missing same-site check to `logout.php` (M-5).
-- [ ] Refactor the interpolated-but-int-cast raw queries to prepared
-      statements uniformly (M-6).
 - [ ] Add a real cron for the partner-commission 7-day-window recheck
       (§7.1) instead of relying on admin page-load timing.
-- [ ] Either wire up or remove the SSO buttons (L-1).
 - [ ] Compress/convert the image library and add lazy-loading + `srcset`
       (§7.2) — directly affects conversion rate on a marketing site.
 - [ ] Add `robots.txt`, `sitemap.xml`, Open Graph tags, and basic analytics
