@@ -8,10 +8,17 @@ newsletter signup, customer accounts, and an **organizer portal**
 referral commissions.
 
 It is static HTML/CSS/JS (no build step, no framework) with a thin,
-hand-rolled **PHP 8 + MySQL** backend bolted on for forms, accounts and the
-organizer portal. The public catalogue works with zero backend at all
-(hand-authored JS data files) and silently upgrades itself the moment the
-PHP/MySQL layer is present — nothing about the static pages has to change.
+hand-rolled **PHP 8 + MySQL** backend (`/backend/`) bolted on for forms,
+accounts and the organizer portal. **ROAMS and TRIPS are deliberately built
+on two different architectures, not a historical accident** — see §4.1:
+- **ROAMS are always hand-fed from static JS** (`assets/data/roams/`) —
+  no database table, no backend endpoint, and none needed. Publishing a new
+  ROAM (a "trip" in content-team terms) means replacing one JS file.
+- **TRIPS, accounts, enquiries, sales and everything else organizer-run**
+  are dynamic, DB-backed data queried through `/backend/`. The public
+  catalogue for TRIPS works with zero backend at all (a hand-authored JS
+  fallback) and silently upgrades itself the moment the PHP/MySQL layer is
+  present — nothing about the static pages has to change.
 
 This document is a from-scratch, code-level audit of the archive as it
 actually stands today (not a changelog of what was *asked for*). It covers
@@ -23,13 +30,17 @@ go/no-go production-readiness checklist.
 > from public access by `.htaccess` — see §8):
 > - [`database/README.md`](database/README.md) — the original schema audit
 >   and implementation-status changelog. **Known to be partly stale** — see
->   §6.4.
+>   §7.5.
 > - [`database/README_DB.md`](database/README_DB.md) — database
 >   architecture reference: ERD-style domain guide, status lifecycles.
 > - [`database/DB_Research.txt`](database/DB_Research.txt) — plain-language,
 >   table-by-table walkthrough of why each table exists.
 > - [`database/roam-details-fields.txt`](database/roam-details-fields.txt) —
->   the full JSON field contract for a ROAM's detail page.
+>   the full field contract for a ROAM's `assets/data/roams/roam-<slug>.js`
+>   file (not a database contract — ROAMS have no database table; see §4.1).
+>
+> None of these database docs describe ROAMS any more except as removed/
+> historical context — ROAMS left the database entirely in this revision.
 
 ---
 
@@ -56,8 +67,8 @@ go/no-go production-readiness checklist.
 | Fonts | Google Fonts: **Cinzel Decorative** (headings), **Aleo** (body), **Podkova** (nav/buttons/labels) |
 | Icons | Font Awesome (self-hosted in `assets/webfonts/`) + hand-drawn inline SVG |
 | Client JS | Vanilla ES5-leaning JavaScript, no framework, no bundler |
-| Server | PHP 8.x, procedural, one shared bootstrap (`assets/js/db.php`) — **25 endpoint files**, ~3,170 lines total |
-| Database | MySQL 8.0+ / MariaDB 10.5+, InnoDB, `utf8mb4` — **20 tables** (`database/schema.sql`, 671 lines) |
+| Server | PHP 8.x, procedural, one shared bootstrap (`backend/db.php`) — **23 endpoint files, all under `/backend/`** |
+| Database | MySQL 8.0+ / MariaDB 10.5+, InnoDB, `utf8mb4` — **16 tables** (`database/schema.sql`), covering accounts, TRIPS, enquiries and sales only — **ROAMS are not in the database at all** (§4.1) |
 | Web server | Apache with `mod_rewrite`, `mod_headers`, `mod_expires` (`.htaccess`) |
 
 **No package.json, no npm, no composer.json, no webpack/vite.** Every
@@ -65,7 +76,7 @@ JS/CSS/font file is committed directly. `assets/js/bootstrap.bundle.min.js`
 is the only vendored JS bundle. This is a deliberate choice (zero build
 tooling, trivial to host anywhere PHP+MySQL exists) but it also means there
 is no dependency manager to run `npm audit` / `composer audit` against —
-see §7.3.
+see §7.4.
 
 ---
 
@@ -79,30 +90,57 @@ see §7.3.
 ├── index.html                    Home page
 │
 ├── about/about.html               About Us
-├── contact/contact.html           Contact Us (form → connect.php)
-├── auth/                          Customer login/signup (login.html, auth.js, auth.css)
-├── account/                       Customer self-service profile (profile.html/js)
+├── contact/contact.html           Contact Us (form → backend/connect.php)
+├── auth/                          Customer login/signup (login.html, change-password.html)
+├── account/                       Customer self-service profile (profile.html)
 │
-├── destinations/                  TRIPS catalogue (vendor/admin-authored, 2–9 days)
+├── destinations/                  TRIPS catalogue (vendor/admin-authored, 2–9 days,
+│   │                               dynamic/DB-backed — see §4.1)
 │   ├── destination-list.html
 │   ├── destination-tours.html     (?destination=<slug>)
 │   └── tour-details.html          One TRIP + enquiry form (?article=<articleId>)
 │
-├── roams/                         ROAMS catalogue (admin-authored, 9–11 days)
+├── roams/                         ROAMS catalogue (hand-authored, 9–11 days,
+│   │                               static JS only, no backend — see §4.1)
 │   ├── roams.html
 │   └── roam-list/roam.html        One ROAM's detail page (?slug=<slug>)
 │
 ├── support/                       FAQs, Terms, Privacy, Cancellation Policy
 │
-├── organizer/                     Vendor / Admin / Partner portal (see §5)
-│   ├── login.html  authoring.html  approvals.html  partner.html
-│   └── organizer.css / organizer.js
+├── organizer/                     Vendor / Admin / Partner portal (see §5) — TRIPS,
+│   │                               accounts, enquiries, sales only; no ROAMS section
+│   └── login.html  authoring.html  approvals.html  partner.html
 │
 ├── assets/
-│   ├── css/                       One stylesheet per page family
-│   ├── js/                        Shared client scripts + every PHP endpoint (25 files)
+│   ├── css/                       One stylesheet per page family, INCLUDING
+│   │                               auth.css / account.css / organizer.css
+│   │                               (moved here from their own folders)
+│   ├── js/                        Every CLIENT-side script, nothing else —
+│   │                               INCLUDING auth.js / profile.js / organizer.js
+│   │                               (moved here from their own folders).
+│   │                               No PHP lives under assets/ any more.
+│   ├── data/roams/                ROAMS' entire live content — hand-authored,
+│   │   ├── roams-index.js          no database, no backend. See §4.1.
+│   │   ├── roam-arabisya-indino.js        ← one file per ROAM, wholesale-
+│   │   ├── roam-coromandel-crest.js         replaced on any content change
+│   │   └── roam-goanique-ganeshika.js
 │   ├── include/header.html,footer.html   Canonical header/footer (hand-copied per page)
 │   ├── favicon/, webfonts/, fonts/, images/   Static assets (~18 MB, see §7.2)
+│
+├── backend/                       EVERY PHP endpoint lives here now (23 files) —
+│   │                               nothing but PHP; moved out of assets/js/ so
+│   │                               server logic and client assets aren't mixed.
+│   │                               No roams/public-roams.php or organizer-roams.php —
+│   │                               see §4.1.
+│   ├── db.php                      Shared bootstrap (config load, mysqli, helpers)
+│   ├── config.sample.php           Template for config.php (never committed)
+│   ├── login.php  signup.php  logout.php  forgot-password.php
+│   │     change-password.php  customer-profile.php  me.php
+│   ├── connect.php  subscribe.php  submit-trip-enquiry.php  public-trips.php
+│   ├── vendor-signup.php
+│   └── organizer-login.php  organizer-me.php  organizer-profile.php
+│         organizer-trips.php  organizer-vendors.php  organizer-partners.php
+│         organizer-enquiries.php  organizer-sales.php  partner-dashboard.php
 │
 ├── database/                      schema.sql + the four docs listed above
 │                                   (blocked from public access by .htaccess)
@@ -146,44 +184,85 @@ header/footer still render correctly on a page that doesn't load
 
 ## 4. Data flow
 
-### 4.1 The public catalogue: two sources merged client-side
+### 4.1 ROAMS vs. TRIPS: two different architectures, by design
 
-This is the most important architectural fact about the codebase. The
-public catalogue has **two independent data sources merged in the
-browser**, so the site works with zero backend and only gets better once a
-database is attached — it never breaks without one:
+This is the single most important architectural fact about the codebase,
+and it's a deliberate split, not an inconsistency: **ROAMS and TRIPS are
+built on two entirely different data models**, chosen per-product because
+they fit how each one is actually authored and how often it changes.
 
-- `assets/js/datasets.js` (`DESTINATIONS_DATA`) and `assets/js/roams-data.js`
-  (`ROAMS_DATA`) — hand-authored, always present, the fallback/seed source.
-- `assets/js/public-trips.php` and `assets/js/public-roams.php` —
-  unauthenticated `GET` endpoints that return only `status='published'`
-  rows from MySQL, in the same shape the static files use.
+**ROAMS — always hand-fed from static JS. No database table. No backend
+endpoint. None needed.**
+
+A ROAM (the ~9–11 day, hand-authored flagship itinerary) is a handful of
+items a year, written by a person, as rich long-form content (hero copy,
+gallery, day-by-day itinerary, FAQ, etc.) — not a high-volume, frequently
+mutated record that benefits from a database. So it isn't one:
+
+- `assets/data/roams/roams-index.js` — the lightweight manifest (title,
+  route, dates, thumbnail, blurb) that drives the roams.html card grid and
+  the nav dropdown.
+- `assets/data/roams/roam-<slug>.js` — **one file per ROAM**, the full
+  detail-page content, loaded by `roam.html` straight off its own `?slug=`
+  URL parameter. Publishing a new ROAM means adding one such file (named
+  for its slug) plus one line in `roams-index.js`. Updating an existing
+  ROAM's content means **replacing its one file wholesale** — no shared
+  file to edit carefully around other ROAMS' content, no migration, no
+  admin UI, no backend involved at any point. See that index file's own
+  header comment for the full add/update/retire workflow, and
+  [`database/roam-details-fields.txt`](database/roam-details-fields.txt)
+  for the exact field contract each `roam-<slug>.js` file follows.
+
+This was already closer to how ROAMS actually worked before this revision
+than it first appears: the old `organizer-roams.php` endpoint had its
+`create`/`update` actions permanently disabled, so a new ROAM was already
+always being added by a human with direct access, by hand — just into
+database rows instead of a file. Moving that hand-editing from SQL to JS
+is a more honest match for the real workflow, and removes an entire
+database/backend dependency for a part of the product that never actually
+needed one.
+
+**TRIPS, accounts, enquiries, sales — dynamic, DB-backed, via `/backend/`.**
+
+Everything else — TRIPS (the vendor/admin-run, 2–9 day product), customer
+accounts, the organizer portal, enquiries, and sales — really is dynamic
+data: created and edited by multiple different people (vendors, admins)
+through live forms, at a volume and mutation rate where a database is the
+right tool. The public TRIPS catalogue reflects this with a **two-source
+merge in the browser**, so the site works with zero backend and only gets
+better once a database is attached — it never breaks without one:
+
+- `assets/js/datasets.js` (`DESTINATIONS_DATA`) — hand-authored, always
+  present, the fallback/seed source.
+- `backend/public-trips.php` — an unauthenticated `GET` endpoint that
+  returns only `status='published'` rows from MySQL, in the same shape the
+  static file uses.
 
 ```mermaid
 flowchart LR
-    subgraph Browser["Browser — destination-list.html / tour-details.html / roams.html"]
-        STATIC["datasets.js / roams-data.js<br/>(hand-authored fallback — always loaded)"]
+    subgraph Browser["Browser — destination-list.html / tour-details.html"]
+        STATIC["datasets.js<br/>(hand-authored fallback — always loaded)"]
         MERGE["Merge step<br/>(DB rows override/extend static rows by slug/voyageId)"]
-        RENDER["Existing render logic<br/>(tour-render.js / roam-render.js)"]
+        RENDER["Existing render logic<br/>(tour-render.js)"]
     end
-    PHP1["public-trips.php (GET)"]
-    PHP2["public-roams.php (GET)"]
-    DB[("MySQL: destinations, tours,<br/>roams, roam_details")]
+    PHP1["backend/public-trips.php (GET)"]
+    DB[("MySQL: destinations, tours")]
 
     STATIC --> MERGE
     PHP1 --> MERGE
-    PHP2 --> MERGE
     MERGE --> RENDER
     PHP1 -. "status='published' only" .-> DB
-    PHP2 -. "status='published' only" .-> DB
 ```
 
-A trip/ROAM only ever becomes publicly visible once its `status` column
-reaches `published` — every other status (`draft`, `pending_review`,
-`paused`, `rejected`, `archived`) is invisible to these two endpoints,
-regardless of what the static JS files say. This is the actual
-authorization boundary for "what the public can see," and it's enforced in
-SQL (`WHERE status = 'published'`), not just in the UI.
+A TRIP only ever becomes publicly visible once its `status` column reaches
+`published` — every other status (`draft`, `pending_review`, `paused`,
+`rejected`, `archived`) is invisible to this endpoint, regardless of what
+`datasets.js` says. This is the actual authorization boundary for "what
+the public can see," and it's enforced in SQL (`WHERE status =
+'published'`), not just in the UI. ROAMS have no equivalent status/boundary
+at all — a ROAM is visible the moment its file exists and is listed in
+`roams-index.js`, exactly as "visible" as any other static page on the
+site.
 
 ### 4.2 TRIP (tour) lifecycle
 
@@ -206,10 +285,10 @@ Key rule enforced in `organizer-trips.php`: once a trip is `published`, a
 vendor can no longer edit its fields (`ep_trip_owned_editable()`) — only an
 admin can. A vendor *can* still pause/resume/archive their own published
 trip (deliberately **not** gated by that same helper — see the inline
-comment in the file). **ROAMS have no creation/edit path in the app at
-all** — `organizer-roams.php`'s `create`/`update` actions return HTTP 410 on
-purpose; new ROAM rows (and their `roam_details` JSON) are always inserted
-directly against the database by hand.
+comment in the file). **ROAMS have no lifecycle like this at all, and no
+organizer-portal page for it** — see §4.1. There is no `organizer-roams.php`
+any more, and no `roams` table for it to operate on; a ROAM's "lifecycle" is
+simply whether its file exists and is listed in `roams-index.js`.
 
 ### 4.3 Enquiry → forwarding → partner commission
 
@@ -273,13 +352,15 @@ flowchart TD
     G -- passes --> H[Validate input<br/>→ prepared statement<br/>→ JSON response]
 ```
 
-This pipeline is consistent across all 16 state-changing endpoints
-(`login.php`, `signup.php`, `vendor-signup.php`, `connect.php`,
+This pipeline is consistent across all 16 state-changing endpoints in
+`/backend/` (`login.php`, `signup.php`, `vendor-signup.php`, `connect.php`,
 `subscribe.php`, `submit-trip-enquiry.php`, `forgot-password.php`,
-`change-password.php`, and all nine `organizer-*.php` files). The two
-unauthenticated read-only `GET` endpoints (`public-trips.php`,
-`public-roams.php`) skip the same-site/honeypot/rate-limit steps since they
-don't mutate anything or require a session — see §6.3 (M-7) for a caveat.
+`change-password.php`, and all eight `organizer-*.php` files — there is no
+`organizer-roams.php` any more, see §4.1). The one unauthenticated read-only
+`GET` endpoint (`public-trips.php`) skips the same-site/honeypot/rate-limit
+steps since it doesn't mutate anything or require a session — see §6.3
+(M-7) for a caveat. (There is no `public-roams.php` either — ROAMS have no
+backend endpoint of any kind.)
 
 ---
 
@@ -288,13 +369,18 @@ don't mutate anything or require a session — see §6.3 (M-7) for a caveat.
 | Page | Who | What it does |
 |---|---|---|
 | `login.html` | vendor, partner, admin | Tabbed sign-in; vendor can also sign up here (→ `pending` review) |
-| `authoring.html` | vendor, admin | Create/edit TRIPS, manage inclusions/exclusions/itinerary/stays, pause/resume, track own sales |
-| `approvals.html` | admin only | Approve/reject/suspend vendors & vendor trips, toggle ROAMS' visibility, forward/resolve enquiries, manage partners, run quarterly payouts |
+| `authoring.html` | vendor, admin | Create/edit TRIPS, manage inclusions/exclusions/itinerary/stays, pause/resume, log a sale (trip or, by free-text name, a ROAM — see §4.1) against their own trips |
+| `approvals.html` | admin only | Approve/reject/suspend vendors & vendor trips, forward/resolve enquiries, manage partners, run quarterly payouts |
 | `partner.html` | partner, vendor | Referral dashboard: PartnerID, commission tier, pending vs. paid earnings |
+
+There is no ROAMS section anywhere in this portal any more — ROAMS have
+nothing for an admin to approve, pause, or toggle (§4.1). A previous
+revision had a ROAMS visibility toggle in `authoring.html`; it's gone, along
+with the `organizer-roams.php` endpoint it called.
 
 Every `organizer-*.php` endpoint calls `ep_require_role([...])` **first**,
 before touching any data — this is the single authorization choke point for
-the whole portal, and every one of the nine files was verified in this
+the whole portal, and every one of the eight files was verified in this
 audit to call it correctly. `organizer.js` also re-checks the session via
 `organizer-me.php` on every page load as a client-side guard, so a vendor
 can't land on the admin shell by guessing a URL (though that client-side
@@ -302,18 +388,31 @@ check is UX only — the real boundary is server-side, as it should be).
 
 ### Demo mode: `mock-backend.js`
 
-All four organizer pages currently load `assets/js/mock-backend.js`
-**before** `organizer.js`. It patches `window.fetch` so every
-`organizer-*.php`/`login`/`logout` request is answered from an in-memory
-store (persisted to `localStorage`) instead of hitting a real server —
-the entire portal can be clicked through with no PHP, no MySQL, no network,
-using seeded trial logins documented in the file's header comment.
+All organizer pages (plus several public pages — see §6.1's note) currently
+load `assets/js/mock-backend.js` **before** `organizer.js`. It patches
+`window.fetch` so every `organizer-*.php`/`login`/`logout` request is
+answered from an in-memory store (persisted to `localStorage`) instead of
+hitting a real server — the entire portal can be clicked through with no
+PHP, no MySQL, no network, using seeded trial logins documented in the
+file's header comment. (There is no mock for ROAMS any more — nothing to
+mock, since there's no `organizer-roams.php` to intercept in the first
+place.)
+
+**Correction found in this audit:** earlier revisions of this document said
+`mock-backend.js` loads on "all four organizer pages." Checking every page
+directly shows it's actually loaded on effectively every page on the
+site — the four organizer pages, `index.html`, `auth/`, `account/`,
+`contact/`, `roams/`, `destinations/`, `support/` and `about/` all include
+it, almost certainly so the shared header/footer chrome (nav login state,
+etc.) behaves consistently in a no-backend preview everywhere, not just in
+the portal.
 
 **This must be removed before deployment** — delete the `mock-backend.js`
-`<script>` tag from all four organizer pages (`login.html`,
-`authoring.html`, `approvals.html`, `partner.html`). Nothing else needs to
-change, since `organizer.js` talks to the same relative `organizer-*.php`
-paths either way. See §8 item B-9.
+`<script>` tag from every page that has one (search the repo for
+`mock-backend.js` to find them all; don't assume it's only the four
+organizer pages). Nothing else needs to change, since `organizer.js` and
+`chrome.js` talk to the same relative endpoint paths either way. See §8
+item B-9.
 
 ---
 
@@ -369,8 +468,12 @@ paths either way. See §8 item B-9.
   `Content-Security-Policy-Report-Only` header (see H-2 below for why this
   needs work before it's actually protective).
 - **File hiding**: `.env`, `.git*`, `*.md`, `*.txt`, `*.sql`,
-  `config(.sample).php`, `*.bak`, `*.zip`, and the whole `/database/` and
-  `/tools/` directories are denied by `.htaccess`.
+  `backend/config(.sample).php` specifically, `*.bak`, `*.zip`, and the
+  whole `/database/` and `/tools/` directories are denied by `.htaccess`.
+  The rest of `/backend/` is deliberately **not** blocked wholesale — its
+  `*.php` files are the live endpoints the site's own JS calls by design;
+  only the config file itself (which holds no output of its own, but is
+  blocked anyway as defense in depth) is singled out.
 
 ### 6.2 Findings & recommendations
 
@@ -382,7 +485,7 @@ hardening.
 |---|---|---|---|
 | **C-1** | Critical | `connect.php`'s own header comment states plainly: *"credentials that were hardcoded in an earlier copy of this file were exposed publicly... rotate its password — replacing this file does not undo that exposure."* This means a real database password may already be compromised, independent of anything in the current code. | Treat this as an active incident, not a historical footnote: rotate the MySQL password and the `EMBARKPEDIA_PASSWORD_PEPPER` **before** this codebase ever touches a real database, confirm the exposed version is purged from any git history / backup / CDN cache, and audit that database's access logs if it was ever live. |
 | **C-2** | Critical | Bot/abuse protection on signup and the trip-enquiry form is **entirely client-side and non-functional as shipped**: (a) the signup canvas captcha is drawn and checked only in `auth.js` — never re-verified server-side, so a direct POST to `signup.php` skips it completely; (b) `tour-render.js` hard-codes `RECAPTCHA_SITE_KEY` to **Google's published, publicly-documented *test* key**, which always validates regardless of input and provides literally zero protection. | Before launch: integrate a real reCAPTCHA v3/hCaptcha/Turnstile site key **and** verify the token server-side in the corresponding PHP endpoint (`signup.php`, `submit-trip-enquiry.php`) before accepting the submission. Until this is done, rely only on the honeypot + rate limiter, which are real but modest. |
-| **H-1** | High | No `.gitignore` exists anywhere in the archive, despite `config.sample.php`'s own instructions assuming one (`assets/js/config.php` is where real DB credentials would live). One `git add .` away from reproducing C-1. | Add a `.gitignore` excluding `assets/js/config.php`, `*.bak`, local env files, and OS/editor cruft, before this project is ever pushed to a repository. |
+| **H-1** | High | No `.gitignore` exists anywhere in the archive, despite `config.sample.php`'s own instructions assuming one (`backend/config.php` is where real DB credentials would live). One `git add .` away from reproducing C-1. | Add a `.gitignore` excluding `backend/config.php`, `*.bak`, local env files, and OS/editor cruft, before this project is ever pushed to a repository. |
 | **H-2** | High | The CSP is `Report-Only` **and** very permissive: `script-src 'self' 'unsafe-inline' https:` allows *any* HTTPS-hosted script plus all inline `<script>` blocks. As written, flipping `Content-Security-Policy-Report-Only` to `Content-Security-Policy` would add negligible real XSS protection. | Tighten `script-src`/`style-src` to an explicit allow-list (the four CDN hosts actually used, Google Fonts) or move to nonces/hashes for the inline scripts, monitor reports for a deploy cycle, then flip to enforcing. |
 | **H-3** | High | No `Strict-Transport-Security` header is set, even though `.htaccess` already force-redirects to HTTPS. Without HSTS, the first request (or any request through a misconfigured proxy/stripped TLS) is vulnerable to downgrade. | Add `Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"` once HTTPS is confirmed stable in production, and consider HSTS preload-list submission. |
 | **H-4** | High | No transactional email provider is wired up anywhere. `ep_send_mail()` falls back to PHP's bare `mail()` in production (commonly spam-foldered/blocked by receiving MTAs with no SPF/DKIM/DMARC behind it) and to `error_log()` in development. This directly affects password-reset delivery, a basic account-security feature, not just the newsletter. | Integrate a real provider (SES, SendGrid, Postmark, etc.) with a verified sending domain, SPF, DKIM and DMARC configured, before launch. |
@@ -392,18 +495,20 @@ hardening.
 | **M-3** | Medium | Password policy is length-only (8–72 chars); no check against known-breached or trivially weak passwords. | Add a k-anonymity breached-password check (e.g., the Have I Been Pwned API) at signup and password-change time. |
 | **M-4** | Medium | No automated backup/retention policy is documented for the MySQL database, which holds customer PII (name, email, phone, age, gender) and financial data (sales, partner earnings, payouts). | Document and test (restore, not just backup) a recurring backup policy, plus a written data-retention/deletion policy for enquiries and closed accounts. |
 | **M-5** | Medium | `logout.php` is the one state-changing endpoint that skips `ep_verify_same_site_request()`. Low real-world impact (a logout CSRF just logs someone out), but it's an inconsistency against an otherwise uniform pattern. | Add the same same-site check for consistency. |
-| **M-6** | Medium | ~35 internal `$conn->query()` calls across `organizer-trips.php`, `organizer-partners.php`, `organizer-roams.php`, `organizer-vendors.php`, `organizer-enquiries.php` and `customer-profile.php` interpolate a PHP variable directly into the SQL string rather than binding it. Every one currently carries only an `(int)`-cast value, so nothing is exploitable today — but the very next endpoint written in this style, without remembering the cast, reintroduces SQL injection silently. | Refactor these to uniform `prepare()`/`bind_param()` calls (the pattern already used correctly almost everywhere else in the same files), or at minimum add a code-review checklist item / static-analysis rule that flags any `$conn->query()` containing string interpolation. |
+| **M-6** | Medium | Internal `$conn->query()` calls across `organizer-trips.php`, `organizer-partners.php`, `organizer-vendors.php`, `organizer-enquiries.php` and `customer-profile.php` interpolate a PHP variable directly into the SQL string rather than binding it. Every one currently carries only an `(int)`-cast value, so nothing is exploitable today — but the very next endpoint written in this style, without remembering the cast, reintroduces SQL injection silently. (`organizer-roams.php` no longer exists — see §4.1 — so it's dropped from this list; its own instances of this pattern left with it.) | Refactor these to uniform `prepare()`/`bind_param()` calls (the pattern already used correctly almost everywhere else in the same files), or at minimum add a code-review checklist item / static-analysis rule that flags any `$conn->query()` containing string interpolation. |
 | **L-1** | Low | The login/signup page shows **Google** and **Outlook** SSO buttons that are unwired stubs (`auth.js` comment: *"no backend wired up in this template"*). | Either implement the OAuth flow or remove the buttons — a visible, non-functional login option is a trust/UX problem. |
 | **L-2** | Low | No CDN/WAF sits in front of the application; all abuse control is purely application-level (DB-backed rate limiting). | Consider fronting production with a CDN/WAF (also solves the static-asset performance gap in §7.2). |
-| **L-3** | Low | `mock-backend.js` and its trial credentials must not ship to production — see §5. | Remove the four `<script>` tags before deploy; consider a build-time check that fails if this file is referenced outside a `dev`/`demo` flag. |
+| **L-3** | Low | `mock-backend.js` and its trial credentials must not ship to production — see §5. It's referenced far more widely than just the organizer pages (see §5's correction note). | Remove every `<script src=".../mock-backend.js">` tag before deploy, not just the four organizer ones; consider a build-time check that fails if this file is referenced outside a `dev`/`demo` flag. |
 
 ### 6.3 Additional notes (not a ranked "fix this" item, but worth recording)
 
-- **M-7**: `public-trips.php`/`public-roams.php` have no rate limiting or
-  caching beyond the browser `mod_expires` rules — fine at current scale,
-  but since their output only changes when an organizer edits a listing,
-  they're excellent candidates for a short server-side cache (even a flat
-  JSON file regenerated on publish/pause/archive) once traffic grows.
+- **M-7**: `public-trips.php` has no rate limiting or caching beyond the
+  browser `mod_expires` rules — fine at current scale, but since its
+  output only changes when an organizer edits a listing, it's an excellent
+  candidate for a short server-side cache (even a flat JSON file
+  regenerated on publish/pause/archive) once traffic grows. (This doesn't
+  apply to ROAMS — there's no endpoint to cache; `assets/data/roams/` is
+  already as static as a cache gets.)
 - The `partner_earnings.profit_share_percent` `CHECK` constraint
   (30–50%) and the trip's 2–9 day `CHECK` constraint are both enforced
   **in two places** — the database `CHECK` and the PHP validation — which
@@ -489,13 +594,19 @@ hardening.
 
 ### 7.5 Documentation references that need cleanup
 
-- `database/README.md` line ~60 still describes the trip-enquiry form as
-  posting into `contact_messages` via `connect.php` — **this is stale**.
-  `submit-trip-enquiry.php` now writes directly into `trip_enquiries` with
-  full partner-referral resolution (confirmed by reading the current code
-  — see §4.3). `database/README_DB.md`'s opening note already flags this
-  same discrepancy; `database/README.md` itself should be updated to match
-  rather than left to rely on a pointer in a sibling file.
+- ~~`database/README.md` line ~60 still describes the trip-enquiry form as
+  posting into `contact_messages` via `connect.php`~~ — **resolved in this
+  revision.** `database/README.md` now carries its own correction note
+  (at the top of the file) pointing out that `submit-trip-enquiry.php`
+  writes directly into `trip_enquiries`, instead of relying on a pointer
+  in a sibling file as before.
+- ~~`database/README.md` describes ROAMS as having listing-level CRUD in
+  `organizer-roams.php`~~ — **resolved in this revision**, and then some:
+  that description was already stale before this pass (the endpoint's
+  `create`/`update` actions had been disabled), and is now further
+  overtaken by ROAMS leaving the database entirely (§4.1). All four
+  `database/` docs were updated together in this revision to describe the
+  new architecture consistently rather than independently drifting.
 - Several PHP file comments reference a `Final_Changes.txt` file (e.g., as
   the record of what was tested against a local MariaDB instance) that
   **does not exist anywhere in this archive**. Either that file was never
@@ -525,7 +636,7 @@ they simply haven't been done yet.
 - [ ] **B-2** Wire real, server-verified bot protection (C-2): a real
       reCAPTCHA/hCaptcha/Turnstile site key **and** server-side token
       verification on `signup.php` and `submit-trip-enquiry.php`.
-- [ ] **B-3** Add `.gitignore` excluding `assets/js/config.php` and other
+- [ ] **B-3** Add `.gitignore` excluding `backend/config.php` and other
       local/secret files (H-1), *before* the project is committed anywhere.
 - [ ] **B-4** Generate a fresh, random `EMBARKPEDIA_PASSWORD_PEPPER`
       (`php -r "echo bin2hex(random_bytes(32));"`) per environment, stored
@@ -545,8 +656,9 @@ they simply haven't been done yet.
 - [ ] **B-8** Set `EMBARKPEDIA_APP_ENV=production` (never leave it on
       `development`, which disables the `Secure` cookie flag and exposes
       PHP errors).
-- [ ] **B-9** Remove the `mock-backend.js` `<script>` tag from all four
-      `/organizer/` pages (§5, L-3).
+- [ ] **B-9** Remove every `mock-backend.js` `<script>` tag — it's on
+      effectively every page, not just the four `/organizer/` ones (§5,
+      L-3).
 - [ ] **B-10** Confirm Apache is actually running with `mod_rewrite`,
       `mod_headers` and `mod_expires` enabled — `.htaccess` silently does
       nothing for the directives inside a disabled `<IfModule>` block.
@@ -599,21 +711,24 @@ they simply haven't been done yet.
 ## 9. Local setup
 
 1. **Static-only preview** (no backend): open `index.html` directly, or
-   serve the folder with any static file server. The catalogue works from
-   `datasets.js`/`roams-data.js` alone; forms will fail to submit (no PHP);
-   the organizer portal works fully via `mock-backend.js` (§5) — **for
-   local development only, never in production (B-9)**.
+   serve the folder with any static file server. The ROAMS catalogue works
+   fully and identically either way — it never needed a backend (§4.1). The
+   TRIPS catalogue works from `datasets.js` alone; forms will fail to
+   submit (no PHP); the organizer portal works fully via `mock-backend.js`
+   (§5) — **for local development only, never in production (B-9)**.
 2. **Full stack** (PHP + MySQL):
    ```bash
-   cp assets/js/config.sample.php assets/js/config.php   # then fill it in,
+   cp backend/config.sample.php backend/config.php   # then fill it in,
    # or set the EMBARKPEDIA_DB_* / EMBARKPEDIA_PASSWORD_PEPPER env vars instead
    mysql -u DB_ADMIN -p your_database_name < database/schema.sql
    php -S localhost:8000   # from the project root
    ```
    Seed an admin account per the instructions at the end of
-   `database/schema.sql`, and remove the `mock-backend.js` `<script>` tag
-   from the four `/organizer/` pages once you want them to hit the real
-   endpoints.
+   `database/schema.sql`, and remove every `mock-backend.js` `<script>` tag
+   (not just the four `/organizer/` pages — see §5's correction note) once
+   you want the whole site to hit the real endpoints. This step is about
+   TRIPS/accounts/enquiries/sales only — ROAMS are unaffected either way,
+   since they never read from the database.
 3. Deploy behind Apache with `mod_rewrite`, `mod_headers`, and
    `mod_expires` enabled so `.htaccess` takes full effect, and work through
    §8 before pointing real traffic at it.
@@ -622,10 +737,16 @@ they simply haven't been done yet.
 
 ## 10. Where to go next
 
-- Adding a destination/TRIP by hand (no backend)? Edit `assets/js/datasets.js`.
-- Adding a ROAM by hand (no backend)? Edit `assets/js/roams-data.js` +
-  `assets/js/roam-details-data.js`, following
-  [`database/roam-details-fields.txt`](database/roam-details-fields.txt).
+- Adding a destination/TRIP by hand, as a static fallback (no backend
+  required, but TRIPS can also be fully backend-authored through
+  `/organizer/`)? Edit `assets/js/datasets.js`.
+- Adding a ROAM — this is **always** how it's done, there is no other way
+  and no backend involved at all (§4.1): create
+  `assets/data/roams/roam-<slug>.js` following
+  [`database/roam-details-fields.txt`](database/roam-details-fields.txt),
+  then add one entry to `assets/data/roams/roams-index.js`. See that
+  index file's own header comment for the full add/update/retire
+  workflow.
 - Understanding or changing the database? Start with
   [`database/README_DB.md`](database/README_DB.md), then
   [`database/DB_Research.txt`](database/DB_Research.txt), then
